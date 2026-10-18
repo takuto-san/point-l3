@@ -1,0 +1,230 @@
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: horizontal
+      Children:
+        - ExternalActors
+        - AWSCloud
+
+    ExternalActors:
+      Type: AWS::Diagram::VerticalStack
+      Children:
+        - Formrun
+        - Reviewer
+    Formrun:
+      Type: AWS::Diagram::Resource
+      Preset: User
+      Title: formrun
+    Reviewer:
+      Type: AWS::Diagram::Resource
+      Preset: User
+      Title: 審査担当者
+
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Preset: AWSCloudNoLogo
+      Direction: horizontal
+      Align: top
+      Children:
+        - L3Account
+        - ManagementAccount
+
+    L3Account:
+      Type: AWS::Diagram::Account
+      Title: L3アカウント（既存）
+      Direction: vertical
+      Children:
+        - L3IngressFlow
+        - L3DecisionFlow
+    L3IngressFlow:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - L3ApiGateway
+        - L3IngestLambda
+        - EvidenceBucket
+        - ReviewWorkflow
+        - Textract
+    L3DecisionFlow:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - IdentityLambda
+        - AwardLambda
+        - Bedrock
+        - ExportLambda
+
+    L3ApiGateway:
+      Type: AWS::ApiGatewayV2::Api
+      Title: Webhook受付
+    L3IngestLambda:
+      Type: AWS::Lambda::Function
+      Title: 申請・証跡取込
+    EvidenceBucket:
+      Type: AWS::S3::Bucket
+      Title: 顧客情報・証跡
+    ReviewWorkflow:
+      Type: AWS::StepFunctions
+      Title: 精査ワークフロー
+    Textract:
+      Type: AWS::Diagram::Resource
+      Preset: Amazon Textract
+      Title: 証跡抽出
+    IdentityLambda:
+      Type: AWS::Lambda::Function
+      Title: 本人確認
+    AwardLambda:
+      Type: AWS::Lambda::Function
+      Title: 付与判定
+    Bedrock:
+      Type: AWS::Diagram::Resource
+      Preset: Amazon Bedrock
+      Title: 判定支援
+    ExportLambda:
+      Type: AWS::Lambda::Function
+      Title: 持出制御
+
+    ManagementAccount:
+      Type: AWS::Diagram::Account
+      Title: 管理システム用アカウント
+      Direction: vertical
+      Children:
+        - ResultFlow
+        - AdminFlow
+    ResultFlow:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - ResultBus
+        - IntakeQueue
+        - ReceiverLambda
+        - ApplicationTable
+    AdminFlow:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - ManagementApi
+        - StaffCognito
+        - AdminCloudFront
+        - AdminBucket
+
+    ResultBus:
+      Type: AWS::Events
+      Title: 結果イベント
+    IntakeQueue:
+      Type: AWS::SQS::Queue
+      Title: 取込キュー / DLQ
+    ReceiverLambda:
+      Type: AWS::Lambda::Function
+      Title: 受信・版管理
+    ApplicationTable:
+      Type: AWS::DynamoDB::Table
+      Title: 申請・版履歴
+    ManagementApi:
+      Type: AWS::ApiGatewayV2::Api
+      Title: 管理API
+    StaffCognito:
+      Type: AWS::Cognito::UserPool
+      Title: 社内認証
+    AdminCloudFront:
+      Type: AWS::CloudFront
+      Title: 管理画面配信
+    AdminBucket:
+      Type: AWS::S3::Bucket
+      Title: 静的ファイル
+
+  Links:
+    - Source: Formrun
+      SourcePosition: E
+      Target: L3ApiGateway
+      TargetPosition: W
+      TargetArrowHead: { Type: Open }
+      Type: orthogonal
+    - Source: L3ApiGateway
+      SourcePosition: E
+      Target: L3IngestLambda
+      TargetPosition: W
+      TargetArrowHead: { Type: Open }
+    - Source: L3IngestLambda
+      SourcePosition: E
+      Target: EvidenceBucket
+      TargetPosition: W
+      TargetArrowHead: { Type: Open }
+    - Source: EvidenceBucket
+      SourcePosition: E
+      Target: ReviewWorkflow
+      TargetPosition: W
+      TargetArrowHead: { Type: Open }
+    - Source: ReviewWorkflow
+      SourcePosition: E
+      Target: Textract
+      TargetPosition: W
+      TargetArrowHead: { Type: Open }
+    - Source: Textract
+      SourcePosition: S
+      Target: IdentityLambda
+      TargetPosition: N
+      TargetArrowHead: { Type: Open }
+      Type: orthogonal
+    - Source: Textract
+      SourcePosition: S
+      Target: AwardLambda
+      TargetPosition: N
+      TargetArrowHead: { Type: Open }
+      Type: orthogonal
+    - Source: AwardLambda
+      SourcePosition: E
+      Target: Bedrock
+      TargetPosition: W
+      TargetArrowHead: { Type: Open }
+    - Source: IdentityLambda
+      SourcePosition: E
+      Target: ExportLambda
+      TargetPosition: W
+      TargetArrowHead: { Type: Open }
+      Type: orthogonal
+    - Source: AwardLambda
+      SourcePosition: E
+      Target: ExportLambda
+      TargetPosition: W
+      TargetArrowHead: { Type: Open }
+      Type: orthogonal
+    - Source: ExportLambda
+      SourcePosition: E
+      Target: ResultBus
+      TargetPosition: W
+      TargetArrowHead: { Type: Open }
+      Type: orthogonal
+    - Source: ResultBus
+      SourcePosition: E
+      Target: IntakeQueue
+      TargetPosition: W
+      TargetArrowHead: { Type: Open }
+    - Source: IntakeQueue
+      SourcePosition: E
+      Target: ReceiverLambda
+      TargetPosition: W
+      TargetArrowHead: { Type: Open }
+    - Source: ReceiverLambda
+      SourcePosition: E
+      Target: ApplicationTable
+      TargetPosition: W
+      TargetArrowHead: { Type: Open }
+    - Source: ManagementApi
+      SourcePosition: N
+      Target: ReceiverLambda
+      TargetPosition: S
+      TargetArrowHead: { Type: Open }
+      Type: orthogonal
+    - Source: Reviewer
+      SourcePosition: E
+      Target: AdminCloudFront
+      TargetPosition: W
+      TargetArrowHead: { Type: Open }
+      Type: orthogonal
+    - Source: AdminCloudFront
+      SourcePosition: E
+      Target: AdminBucket
+      TargetPosition: W
+      TargetArrowHead: { Type: Open }

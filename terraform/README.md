@@ -2,7 +2,7 @@
 
 ## 構成図
 
-[L3アカウントと管理アカウントを分離したAWS構成図（draw.io）](../docs/architecture-aws.drawio)
+![L3アカウントと管理アカウントを分離したAWS構成図](../docs/aws-architecture.png)
 
 ## ディレクトリ構成
 

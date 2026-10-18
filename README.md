@@ -41,10 +41,11 @@ point-l3/
 │   ├── *.tf
 │   └── terraform.tfvars.example
 └── docs/
-    ├── architecture-aws.drawio
+    ├── aws-architecture.yaml
+    ├── aws-architecture.png
     └── system-overview.png
 ```
 
 ## 4. AWS構成図
 
-[AWS構成図（draw.io）](docs/architecture-aws.drawio)
+![AWS構成図](docs/aws-architecture.png)
