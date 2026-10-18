@@ -13,7 +13,7 @@
 | Docker / Docker Compose | Compose v2 |
 | Terraform | 1.6.0以上 |
 | AWS CLI | v2 |
-| Swagger UI | 5.25.3 |
+| Swagger UI | 5.33.1 |
 | Diagram-as-Code (`awsdac`) | v0.23 |
 
 ## 2. セットアップ
@@ -29,6 +29,20 @@ terraform -chdir=terraform fmt -check
 terraform -chdir=terraform validate
 awsdac aws-architecture.yml --output diagrams/aws-architecture.png --force
 ```
+
+Swagger UI は <http://localhost:8081> で確認できる。ポートを変更する場合は、例えば
+`SWAGGER_PORT=18081 docker compose up --build -d --wait` とする。終了時は
+`docker compose down` を実行する。起動中に `openapi.yml` を編集した場合は、イメージの
+再ビルドをせずブラウザの再読み込みだけで変更を確認できる。
+
+### Docker構成の選定
+
+- OpenAPI定義の閲覧用途に限定し、独自のWebサーバーは実装せず公式Swagger UIイメージを使用する。
+- 再現性のため`latest`を避け、OpenAPI 3.1対応のSwagger UI 5.33.1へ固定する。
+- 定義ファイルをイメージへ含め、同じイメージをローカル確認と配布の両方に使用できるようにする。
+- ローカルでは定義ファイルを読み取り専用でマウントし、編集内容を即時反映する。
+- 公開先をループバックアドレスに限定し、コンテナ内の権限昇格を抑止する。
+- このイメージはAPIドキュメント表示専用であり、L3処理の実行環境ではない。
 
 ## 3. ディレクトリ構成
 
@@ -52,4 +66,4 @@ point-l3/
 
 ![AWS構成図](diagrams/aws-architecture.png)
 
-この図は目標構成です。VPC・AZ・サブネットとLambdaのVPC接続は現時点のTerraformには未実装です。
+この図は目標構成です。L3側は単一AZ・単一プライベートサブネットに処理Lambdaを集約します。VPC・AZ・サブネットとLambdaのVPC接続は現時点のTerraformには未実装です。

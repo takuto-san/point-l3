@@ -60,35 +60,31 @@ Diagram:
       Title: L3処理VPC
       Direction: vertical
       Children:
-        - L3AZs
-    L3AZs:
-      Type: AWS::Diagram::HorizontalStack
-      Children:
         - L3AZa
-        - L3AZc
     L3AZa:
       Type: AWS::EC2::AvailabilityZone
       Title: ap-northeast-1a
       Children:
-        - L3PrivateSubnetA
-    L3PrivateSubnetA:
+        - L3PrivateSubnet
+    L3PrivateSubnet:
       Type: AWS::EC2::Subnet
       Preset: PrivateSubnet
       Title: プライベートサブネット
       Direction: vertical
+      Children:
+        - L3LambdaGrid
+    L3LambdaGrid:
+      Type: AWS::Diagram::VerticalStack
+      Children:
+        - L3LambdaRow1
+        - L3LambdaRow2
+    L3LambdaRow1:
+      Type: AWS::Diagram::HorizontalStack
       Children:
         - IngestLambda
         - IdentityLambda
-    L3AZc:
-      Type: AWS::EC2::AvailabilityZone
-      Title: ap-northeast-1c
-      Children:
-        - L3PrivateSubnetC
-    L3PrivateSubnetC:
-      Type: AWS::EC2::Subnet
-      Preset: PrivateSubnet
-      Title: プライベートサブネット
-      Direction: vertical
+    L3LambdaRow2:
+      Type: AWS::Diagram::HorizontalStack
       Children:
         - AwardLambda
         - ExportLambda
@@ -242,16 +238,17 @@ Diagram:
       TargetPosition: W
       TargetArrowHead: { Type: Open }
     - Source: IdentityLambda
-      SourcePosition: E
+      SourcePosition: S
       Target: AwardLambda
-      TargetPosition: W
+      TargetPosition: N
       TargetArrowHead: { Type: Open }
       Type: orthogonal
     - Source: AwardLambda
-      SourcePosition: S
+      SourcePosition: E
       Target: ExportLambda
-      TargetPosition: N
+      TargetPosition: W
       TargetArrowHead: { Type: Open }
+      Type: orthogonal
     - Source: ExportLambda
       SourcePosition: E
       Target: ResultBus

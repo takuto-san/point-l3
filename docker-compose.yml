@@ -1,5 +1,13 @@
 services:
   swagger-ui:
-    build: .
+    image: point-l3-swagger-ui:5.33.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    init: true
+    security_opt:
+      - no-new-privileges:true
     ports:
       - "127.0.0.1:${SWAGGER_PORT:-8081}:8080"
+    volumes:
+      - ./openapi.yml:/spec/openapi.yml:ro
