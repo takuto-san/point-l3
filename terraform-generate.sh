@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-project_dir="$(cd "$(dirname "$0")/.." && pwd)"
-template_dir="$project_dir/scripts/terraform/templates"
+project_dir="$(cd "$(dirname "$0")" && pwd)"
+template_dir="$project_dir/.terraform-templates"
 output_dir="${1:-$project_dir/terraform}"
 
 mkdir -p "$output_dir"
