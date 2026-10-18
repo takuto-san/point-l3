@@ -46,21 +46,12 @@ Diagram:
     L3ManagedServices:
       Type: AWS::Diagram::Resource
       Preset: BlankGroup
-      Title: VPC外のAWSマネージドサービス
-      Direction: vertical
+      Direction: horizontal
       BorderColor: "rgba(0,0,0,255)"
       BorderType: dashed
       Children:
-        - L3Ingress
-        - L3Analysis
-    L3Ingress:
-      Type: AWS::Diagram::HorizontalStack
-      Children:
         - WebhookApi
         - EvidenceBucket
-    L3Analysis:
-      Type: AWS::Diagram::HorizontalStack
-      Children:
         - ReviewWorkflow
         - Textract
         - Bedrock
@@ -142,7 +133,7 @@ Diagram:
     ManagementGlobalServices:
       Type: AWS::Diagram::Resource
       Preset: BlankGroup
-      Title: グローバルサービス（VPC外）
+      Align: left
       BorderColor: "rgba(0,0,0,255)"
       BorderType: dashed
       Children:
@@ -157,7 +148,6 @@ Diagram:
     ManagementManagedServices:
       Type: AWS::Diagram::Resource
       Preset: BlankGroup
-      Title: VPC外のAWSマネージドサービス
       Direction: vertical
       BorderColor: "rgba(0,0,0,255)"
       BorderType: dashed
@@ -167,28 +157,16 @@ Diagram:
     ManagementUI:
       Type: AWS::Diagram::HorizontalStack
       Children:
-        - ManagementBackend
-        - ManagementFrontend
-    ManagementBackend:
-      Type: AWS::Diagram::VerticalStack
-      Children:
+        - AdminBucket
         - StaffCognito
         - ManagementApi
-    ManagementFrontend:
-      Type: AWS::Diagram::VerticalStack
-      Children:
-        - AdminBucket
     ResultIngestion:
       Type: AWS::Diagram::HorizontalStack
       Children:
         - ResultBus
-        - QueueGroup
-        - ApplicationTable
-    QueueGroup:
-      Type: AWS::Diagram::HorizontalStack
-      Children:
         - IntakeQueue
         - IntakeDLQ
+        - ApplicationTable
     ManagementVPC:
       Type: AWS::EC2::VPC
       Title: 管理処理VPC
@@ -270,9 +248,9 @@ Diagram:
       TargetArrowHead: { Type: Open }
       Type: orthogonal
     - Source: AwardLambda
-      SourcePosition: E
+      SourcePosition: S
       Target: ExportLambda
-      TargetPosition: W
+      TargetPosition: N
       TargetArrowHead: { Type: Open }
     - Source: ExportLambda
       SourcePosition: E
@@ -314,8 +292,9 @@ Diagram:
       Target: AdminBucket
       TargetPosition: N
       TargetArrowHead: { Type: Open }
+      Type: orthogonal
     - Source: StaffCognito
-      SourcePosition: S
+      SourcePosition: E
       Target: ManagementApi
-      TargetPosition: N
+      TargetPosition: W
       TargetArrowHead: { Type: Open }
