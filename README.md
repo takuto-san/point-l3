@@ -4,9 +4,7 @@
 
 他社解約金還元申請の顧客情報と証跡をL3アカウント内に保持し、証跡解析・本人確認・ポイント付与判定を行う。管理システムには、持出制御を通過した結果だけを連携する。
 
-![解約金還元申請システムの全体像](docs/point-award-system-overview-with-screens.png)
-
-[SVG](docs/point-award-system-overview-with-screens.svg) ／ [HTML](docs/point-award-system-overview-with-screens.html)
+![解約金還元申請システムの全体像](docs/system-overview.png)
 
 ## 1. 依存関係
 
@@ -50,13 +48,9 @@ point-l3/
 │       └── .terraform.lock.hcl.tmpl
 └── docs/
     ├── architecture-aws.drawio
-    ├── architecture-aws.png
-    ├── architecture-aws.svg
-    └── point-award-system-overview-with-screens.{html,png,svg}
+    └── system-overview.png
 ```
 
 ## 4. AWS構成図
 
-![AWS構成図](docs/architecture-aws.png)
-
-[draw.io](docs/architecture-aws.drawio) ／ [SVG](docs/architecture-aws.svg)
+[AWS構成図（draw.io）](docs/architecture-aws.drawio)
