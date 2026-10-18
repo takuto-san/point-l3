@@ -12,6 +12,7 @@
 |---|---|
 | Git | ソースの取得 |
 | Docker / Docker Compose v2 | Swagger UIの起動。Docker Desktop等を起動しておく |
+| Python 3.9以上 | 編集可能なdraw.io構成図の再生成 |
 | Terraform 1.6以上 | L3用AWS構成の初期化・検証・構築 |
 | AWS CLI v2 | AWSへ構築する場合の認証・アカウント確認 |
 
@@ -115,7 +116,9 @@ point / point-l3 の両リポジトリに、以下の同一画像を掲載する
 
 ![L3アカウントと管理アカウントを分離した共通AWS構成図](docs/architecture-aws.dot.png)
 
-[SVG版](docs/architecture-aws.dot.svg) ／ [Terravision設計定義](docs/architecture.tvg.json) ／ [ラベル・連携定義](docs/terravision.yml)
+[draw.io編集用ファイル](docs/architecture-aws.drawio) ／ [SVG版](docs/architecture-aws.dot.svg) ／ [Terravision設計定義](docs/architecture.tvg.json)
+
+編集用の `.drawio` はAWS4サービスアイコンと編集可能なAWS Account枠・矢印で構成する。[AWSの図作成記事](https://aws.amazon.com/blogs/machine-learning/build-aws-architecture-diagrams-using-amazon-q-cli-and-mcp/) が示すサービス・接続・境界の整理を、draw.io形式に合わせて適用した。画像は同じ設計定義から生成したTerravisionのプレビュー。
 
 - **L3アカウント（既存）**：Webhook受付 → 受付Lambda → S3へ顧客・申請・証跡データを保存。保存後にStep Functionsで精査を開始し、Textract、本人確認Lambda、付与判定Lambda、Bedrock、持出ゲート・送信LambdaをL3内で利用する。
 - **本人確認Lambda**：抽出した氏名とL3内の回線契約者情報を照合し、結果・理由を返す。回線契約情報の取得元・接続方式は詳細設計で確定する。Webhookを保存するS3を、照合用の正しい回線契約情報の取得元と同一視しない。
@@ -148,12 +151,15 @@ point-l3/
 │   └── .terraform.lock.hcl             # AWSプロバイダの固定
 ├── tools/
 │   ├── diagram.sh                     # 共通AWS設計図の再生成（両リポジトリ共通）
+│   ├── diagram-drawio.py              # 編集可能なdraw.io図を生成
+│   ├── diagram-preview.sh             # TerravisionのPNG/SVGプレビューを生成
 │   ├── diagram-terraform.sh           # このリポジトリのTerraformだけを図示
 │   ├── diagram-providers.tf.txt        # Terraform図用の仮プロバイダ設定
 │   ├── terravision.Dockerfile          # 日本語フォント対応の描画環境
 │   └── terravision-services.pth        # Textract/Bedrockの公式サービスアイコン名
 └── docs/
     ├── architecture.tvg.json           # 両アカウントの共通設計図
+    ├── architecture-aws.drawio          # AWS4アイコンで編集可能な共通図
     ├── terravision.yml                 # 日本語ラベル・連携ラベル
     ├── architecture-aws.dot.png
     ├── architecture-aws.dot.svg
@@ -205,8 +211,10 @@ OpenAPIのPUT/GETは管理側が提供するIAM認可の受信・受信票API。
 bash tools/diagram.sh
 ```
 
-Dockerのみ必要。共通の `docs/architecture.tvg.json` と `docs/terravision.yml` を入力し、日本語フォントを追加したTerravision 0.55.0でPNG/SVGを生成する。Textract/Bedrockはサービス利用を示す図用の型で、Terraformリソースの作成を意味しない。
+Python 3.9以上のみ必要。共通の `docs/architecture.tvg.json` を入力し、AWS4アイコンを使った編集可能な `docs/architecture-aws.drawio` を生成する。Textract/Bedrockはサービス利用を示す図用の型で、Terraformリソースの作成を意味しない。
 
-両リポジトリの設計定義・注釈・生成スクリプト・画像を同一に保つ。共通図は一方で一度生成し、PNG/SVGを他方の `docs/` にもコピーする。描画日時が画像に入るため、個別生成ではバイト単位で一致しない。
+両リポジトリの設計定義・生成スクリプト・draw.ioファイルを同一に保つ。`.drawio` は [diagrams.net](https://app.diagrams.net/) の「ファイルを開く」から編集できる。
 
-このリポジトリのTerraformだけを図示する場合は `bash tools/diagram-terraform.sh` を使う（Terraformも必要）。出力名は `terraform-architecture-aws.dot.png` / `.svg` で、READMEの共通図を上書きしない。どちらの手順もAWSの作成・変更は行わない。
+READMEに表示するPNG/SVGプレビューを再生成する場合は、Dockerを起動して `bash tools/diagram-preview.sh` を実行する。Terravision 0.55.0を使うため、プレビューの配置はdraw.io編集画面と異なる。両リポジトリの画像を同一に保つときは一方で生成してコピーする。描画日時が画像に入るため、個別生成ではバイト単位で一致しない。
+
+このリポジトリのTerraformだけを図示する場合は `bash tools/diagram-terraform.sh` を使う（Terraformも必要）。出力名は `terraform-architecture-aws.dot.png` / `.svg` で、READMEの共通図を上書きしない。いずれの図生成手順もAWSの作成・変更は行わない。
