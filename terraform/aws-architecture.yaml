@@ -41,9 +41,18 @@ Diagram:
       Title: ap-northeast-1
       Direction: vertical
       Children:
+        - L3ManagedServices
+        - L3VPC
+    L3ManagedServices:
+      Type: AWS::Diagram::Resource
+      Preset: BlankGroup
+      Title: VPC外のAWSマネージドサービス
+      Direction: vertical
+      BorderColor: "rgba(0,0,0,255)"
+      BorderType: dashed
+      Children:
         - L3Ingress
         - L3Analysis
-        - L3VPC
     L3Ingress:
       Type: AWS::Diagram::HorizontalStack
       Children:
@@ -128,15 +137,33 @@ Diagram:
       Title: 管理システム用アカウント
       Direction: vertical
       Children:
+        - ManagementGlobalServices
         - ManagementRegion
+    ManagementGlobalServices:
+      Type: AWS::Diagram::Resource
+      Preset: BlankGroup
+      Title: グローバルサービス（VPC外）
+      BorderColor: "rgba(0,0,0,255)"
+      BorderType: dashed
+      Children:
+        - AdminCloudFront
     ManagementRegion:
       Type: AWS::Region
       Title: ap-northeast-1
       Direction: vertical
       Children:
+        - ManagementManagedServices
+        - ManagementVPC
+    ManagementManagedServices:
+      Type: AWS::Diagram::Resource
+      Preset: BlankGroup
+      Title: VPC外のAWSマネージドサービス
+      Direction: vertical
+      BorderColor: "rgba(0,0,0,255)"
+      BorderType: dashed
+      Children:
         - ManagementUI
         - ResultIngestion
-        - ManagementVPC
     ManagementUI:
       Type: AWS::Diagram::HorizontalStack
       Children:
@@ -150,7 +177,6 @@ Diagram:
     ManagementFrontend:
       Type: AWS::Diagram::VerticalStack
       Children:
-        - AdminCloudFront
         - AdminBucket
     ResultIngestion:
       Type: AWS::Diagram::HorizontalStack
