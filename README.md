@@ -113,11 +113,11 @@ L3側の処理方針：
 
 point / point-l3 の両リポジトリに、以下の同一画像を掲載する。既存の **L3アカウント** と管理システム用アカウントを、AWS Accountの枠で分離した全体設計図。
 
-![L3アカウントと管理アカウントを分離した共通AWS構成図](docs/architecture-aws.dot.png)
+![L3アカウントと管理アカウントを分離した共通AWS構成図](docs/architecture-aws.png)
 
-[draw.io編集用ファイル](docs/architecture-aws.drawio) ／ [SVG版](docs/architecture-aws.dot.svg) ／ [Terravision設計定義](docs/architecture.tvg.json)
+[draw.io編集用ファイル](docs/architecture-aws.drawio) ／ [draw.io出力SVG](docs/architecture-aws.svg) ／ [Terravision設計定義](docs/architecture.tvg.json)
 
-編集用の `.drawio` はAWS4サービスアイコンと編集可能なAWS Account枠・矢印で構成する。[AWSの図作成記事](https://aws.amazon.com/blogs/machine-learning/build-aws-architecture-diagrams-using-amazon-q-cli-and-mcp/) が示すサービス・接続・境界の整理を、draw.io形式に合わせて適用した。画像は同じ設計定義から生成したTerravisionのプレビュー。
+編集用の `.drawio` はAWS4サービスアイコンと編集可能なAWS Account枠・矢印で構成する。[AWSの図作成記事](https://aws.amazon.com/blogs/machine-learning/build-aws-architecture-diagrams-using-amazon-q-cli-and-mcp/) が示すサービス・接続・境界の整理を、draw.io形式に合わせて適用した。READMEの画像もこのdraw.ioファイルから出力している。
 
 - **L3アカウント（既存）**：Webhook受付 → 受付Lambda → S3へ顧客・申請・証跡データを保存。保存後にStep Functionsで精査を開始し、Textract、本人確認Lambda、付与判定Lambda、Bedrock、持出ゲート・送信LambdaをL3内で利用する。
 - **本人確認Lambda**：抽出した氏名とL3内の回線契約者情報を照合し、結果・理由を返す。回線契約情報の取得元・接続方式は詳細設計で確定する。Webhookを保存するS3を、照合用の正しい回線契約情報の取得元と同一視しない。
@@ -159,6 +159,8 @@ point-l3/
 └── docs/
     ├── architecture.tvg.json           # 両アカウントの共通設計図
     ├── architecture-aws.drawio          # AWS4アイコンで編集可能な共通図
+    ├── architecture-aws.png             # draw.ioから出力したREADME表示用画像
+    ├── architecture-aws.svg             # draw.ioから出力したSVG
     ├── terravision.yml                 # 日本語ラベル・連携ラベル
     ├── architecture-aws.dot.png
     ├── architecture-aws.dot.svg
@@ -210,7 +212,7 @@ OpenAPIのPUT/GETは管理側が提供するIAM認可の受信・受信票API。
 bash tools/diagram.sh
 ```
 
-Dockerのみ必要。コンテナ内のPythonで共通の `docs/architecture.tvg.json` を読み込み、AWS4アイコンを使った編集可能な `docs/architecture-aws.drawio` を生成する。ホストにPythonをインストールする必要はない。Textract/Bedrockはサービス利用を示す図用の型で、Terraformリソースの作成を意味しない。
+Dockerのみ必要。コンテナ内のPythonで共通の `docs/architecture.tvg.json` を読み込み、AWS4アイコンを使った編集可能な `docs/architecture-aws.drawio` を生成する。READMEの構成図は、このdraw.ioファイルから出力したPNGである。ホストにPythonをインストールする必要はない。Textract/Bedrockはサービス利用を示す図用の型で、Terraformリソースの作成を意味しない。
 
 両リポジトリの設計定義・生成スクリプト・draw.ioファイルを同一に保つ。`.drawio` は [diagrams.net](https://app.diagrams.net/) の「ファイルを開く」から編集できる。
 
