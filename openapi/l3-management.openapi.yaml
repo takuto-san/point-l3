@@ -1,0 +1,522 @@
+openapi: 3.1.0
+info:
+  title: L3－申請管理システム連携API（たたき台）
+  version: 0.2.0
+  description: 2026-10-18作成。「管理システム」チャットの最新要件に基づく設計案。管理システムがAPIを提供し、L3から持出許可済みのデータを送る。AWS実装ではIAM/SigV4を使用する。通常の非同期連携はEventBridgeを使用し、このAPIと同じAnalysisSnapshot契約を用いる。担当者の編集・確定、formrun
+    Webhook、メール基盤、マイページ、ポイント実付与のAPIは対象外。
+servers:
+- url: https://management-api.example.invalid/v1
+  description: 仮の管理側URL。実環境に置換する。
+security:
+- awsSigV4: []
+tags:
+- name: L3結果連携
+paths:
+  /applications/{applicationId}/analysis-revisions/{revision}:
+    parameters:
+    - name: applicationId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ApplicationId'
+    - name: revision
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+    - name: X-Request-Id
+      in: header
+      required: false
+      schema:
+        type: string
+        maxLength: 100
+        pattern: ^[A-Za-z0-9_-]+$
+      description: 1回の通信ごとのログ照合ID。重複排除キーは申請ID＋revision。
+    put:
+      tags:
+      - L3結果連携
+      operationId: putAnalysisRevision
+      summary: 受付・本人確認・ポイント付与判定の最新スナップショットを連携
+      description: L3側の持出ゲートから管理側へ送信。差分ではなく、その版時点の全状態を送る。初回は両解析PENDINGでもよい。200は永続化と反映/保留/旧版判定が完了したことを示し、審査確定・メール送信を意味しない。同じパスへの同一本文の再送は保存済みの受信票を返す。
+      x-caller: L3側の持出ゲート
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnalysisSnapshot'
+            examples:
+              received:
+                summary: 初回受付
+                value: &id001
+                  schemaVersion: '1.0'
+                  applicationId: APP-0241
+                  revision: 1
+                  submissionVersion: 1
+                  receivedAt: '2026-10-17T09:00:00+09:00'
+                  submittedAt: '2026-10-17T09:00:00+09:00'
+                  generatedAt: '2026-10-17T09:00:10+09:00'
+                  campaignCode: DRAFT_CANCELLATION_REFUND
+                  channelCode: DRAFT_NOJIMA
+                  identityAnalysis:
+                    status: PENDING
+                  awardAnalysis:
+                    status: PENDING
+                  cancellationFeeTotalYen: null
+              analyzed:
+                summary: 両判定完了
+                value: &id002
+                  schemaVersion: '1.0'
+                  applicationId: APP-0241
+                  revision: 3
+                  submissionVersion: 1
+                  receivedAt: '2026-10-17T09:00:00+09:00'
+                  submittedAt: '2026-10-17T09:00:00+09:00'
+                  generatedAt: '2026-10-17T09:05:00+09:00'
+                  campaignCode: DRAFT_CANCELLATION_REFUND
+                  channelCode: DRAFT_NOJIMA
+                  identityAnalysis:
+                    status: COMPLETED
+                    completedAt: '2026-10-17T09:03:00+09:00'
+                    decision:
+                      result: NG
+                      reason: 証跡の氏名と回線契約者氏名が一致しない
+                  awardAnalysis:
+                    status: COMPLETED
+                    completedAt: '2026-10-17T09:05:00+09:00'
+                    decision:
+                      result: EVIDENCE_INCOMPLETE
+                      reason: 証明書に他社サービス名を確認できない
+                  cancellationFeeTotalYen: 18700
+      responses:
+        '200':
+          description: 受信を永続化し、結果の扱いを決定済み。新規・同一再送とも200。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncReceipt'
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/RevisionConflict'
+        '422':
+          $ref: '#/components/responses/PayloadRejected'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+    get:
+      tags:
+      - L3結果連携
+      operationId: getAnalysisRevisionReceipt
+      summary: 送信済みの版の受信票を照会
+      description: L3側から通信タイムアウト時などに確認。解析内容や顧客情報は返さない。404後の再PUTも同じ本文・版で行う。過去の受信票のdispositionは変更しない。
+      x-caller: L3側の持出ゲート
+      responses:
+        '200':
+          description: 初回受付時点で確定した受信票。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncReceipt'
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+components:
+  securitySchemes:
+    awsSigV4:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: AWS IAM認可とSignature Version 4を使用するサービス間認証。ブラウザから直接呼び出さない。
+      x-amazon-apigateway-authtype: awsSigv4
+  schemas:
+    ApplicationId:
+      type: string
+      description: L3が採番する申請の不変ID。formrunの表示番号との一意対応をL3側で保持。PIIを含めない。
+      minLength: 1
+      maxLength: 80
+      pattern: ^[A-Za-z0-9_-]+$
+    ResultReason:
+      type: string
+      description: L3の持出審査を通過した理由。氏名・住所・電話番号・メール・OCR原文を埋め込まない。
+      minLength: 1
+      maxLength: 500
+    IdentityDecision:
+      type: object
+      additionalProperties: false
+      required:
+      - result
+      - reason
+      properties:
+        result:
+          type: string
+          enum:
+          - OK
+          - NG
+        reason:
+          $ref: '#/components/schemas/ResultReason'
+    AwardDecision:
+      type: object
+      additionalProperties: false
+      required:
+      - result
+      - reason
+      properties:
+        result:
+          type: string
+          enum:
+          - APPROVED
+          - REJECTED
+          - EVIDENCE_INCOMPLETE
+        reason:
+          $ref: '#/components/schemas/ResultReason'
+    IdentityAnalysis:
+      description: 処理状態は連携用メタデータ。AIの出力はdecision内のresultとreasonのみ。NGは処理失敗ではない。
+      oneOf:
+      - type: object
+        additionalProperties: false
+        required:
+        - status
+        properties:
+          status:
+            const: PENDING
+            type: string
+      - type: object
+        additionalProperties: false
+        required:
+        - status
+        - completedAt
+        - decision
+        properties:
+          status:
+            const: COMPLETED
+            type: string
+          completedAt:
+            type: string
+            format: date-time
+          decision:
+            $ref: '#/components/schemas/IdentityDecision'
+      - type: object
+        additionalProperties: false
+        required:
+        - status
+        - failedAt
+        - errorCode
+        properties:
+          status:
+            const: FAILED
+            type: string
+          failedAt:
+            type: string
+            format: date-time
+          errorCode:
+            type: string
+            enum:
+            - EXTRACTION_FAILED
+            - DEPENDENCY_UNAVAILABLE
+            - ANALYSIS_FAILED
+    AwardAnalysis:
+      description: 処理状態は連携用メタデータ。AIの出力はdecision内のresultとreasonのみ。NGは処理失敗ではない。
+      oneOf:
+      - type: object
+        additionalProperties: false
+        required:
+        - status
+        properties:
+          status:
+            const: PENDING
+            type: string
+      - type: object
+        additionalProperties: false
+        required:
+        - status
+        - completedAt
+        - decision
+        properties:
+          status:
+            const: COMPLETED
+            type: string
+          completedAt:
+            type: string
+            format: date-time
+          decision:
+            $ref: '#/components/schemas/AwardDecision'
+      - type: object
+        additionalProperties: false
+        required:
+        - status
+        - failedAt
+        - errorCode
+        properties:
+          status:
+            const: FAILED
+            type: string
+          failedAt:
+            type: string
+            format: date-time
+          errorCode:
+            type: string
+            enum:
+            - EXTRACTION_FAILED
+            - DEPENDENCY_UNAVAILABLE
+            - ANALYSIS_FAILED
+    MaskedPerson:
+      type: object
+      additionalProperties: false
+      properties:
+        nameMasked:
+          type: string
+          description: L3でマスク済みの氏名。マスク方式と持出許可は要確認。
+          minLength: 1
+          maxLength: 80
+        phoneMasked:
+          type: string
+          description: L3でマスク済みの電話番号。持出許可は要確認。
+          minLength: 1
+          maxLength: 40
+        addressMasked:
+          type: string
+          description: L3でマスク済みの住所。持出許可は要確認。
+          minLength: 1
+          maxLength: 120
+    DisplayData:
+      type: object
+      additionalProperties: false
+      properties:
+        niftyId:
+          type: string
+          description: 一覧・検索用NIFTY ID。識別子としての持出許可が必要。未許可なら送らない。
+          minLength: 1
+          maxLength: 80
+        contract:
+          $ref: '#/components/schemas/MaskedPerson'
+        evidence:
+          $ref: '#/components/schemas/MaskedPerson'
+        formrunRecordId:
+          type: string
+          description: formrun画面遷移用の不透明なレコードID。URLやファイルURLは受け取らない。持出許可は要確認。
+          minLength: 1
+          maxLength: 120
+          pattern: ^[A-Za-z0-9_-]+$
+    AnalysisSnapshot:
+      type: object
+      additionalProperties: false
+      required:
+      - schemaVersion
+      - applicationId
+      - revision
+      - submissionVersion
+      - receivedAt
+      - submittedAt
+      - generatedAt
+      - campaignCode
+      - channelCode
+      - identityAnalysis
+      - awardAnalysis
+      - cancellationFeeTotalYen
+      properties:
+        schemaVersion:
+          type: string
+          const: '1.0'
+        applicationId:
+          $ref: '#/components/schemas/ApplicationId'
+        revision:
+          type: integer
+          minimum: 1
+          description: 申請単位で1から単調増加。本人確認と付与判定をまたいでL3の単一集約処理が採番。
+        submissionVersion:
+          type: integer
+          minimum: 1
+          description: 証跡の再提出ごとに増加。通常の解析更新では変えない。
+        receivedAt:
+          type: string
+          format: date-time
+          description: 初回のformrun申請受付時刻。以後不変。
+        submittedAt:
+          type: string
+          format: date-time
+          description: 今回の証跡提出時刻。再提出時に更新。
+        generatedAt:
+          type: string
+          format: date-time
+          description: このスナップショット生成時刻。順序判定には使わない。
+        campaignCode:
+          type: string
+          description: キャンペーン識別コード。実コード体系は要確認。
+          minLength: 1
+          maxLength: 80
+        channelCode:
+          type: string
+          description: 申込販路コード。実コード体系は要確認。
+          minLength: 1
+          maxLength: 80
+        identityAnalysis:
+          $ref: '#/components/schemas/IdentityAnalysis'
+        awardAnalysis:
+          $ref: '#/components/schemas/AwardAnalysis'
+        cancellationFeeTotalYen:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          description: 抽出した解約金総額（円）。未抽出・読取不可はnull。0円と区別。対象費用額や付与ポイント数ではない。
+        displayData:
+          $ref: '#/components/schemas/DisplayData'
+      examples:
+      - *id001
+      - *id002
+    SyncReceipt:
+      type: object
+      additionalProperties: false
+      required:
+      - applicationId
+      - revision
+      - receivedAt
+      - disposition
+      - latestAppliedRevision
+      properties:
+        applicationId:
+          $ref: '#/components/schemas/ApplicationId'
+        revision:
+          type: integer
+          minimum: 1
+          description: 受信した版
+        receivedAt:
+          type: string
+          format: date-time
+          description: 管理側で受信内容を永続化した時刻。
+        disposition:
+          type: string
+          enum:
+          - APPLIED
+          - IGNORED_STALE
+          - HELD_AFTER_CONFIRMATION
+          description: APPLIED=AI初期値へ反映、IGNORED_STALE=新しい版が反映済み、HELD_AFTER_CONFIRMATION=確定済みのため保留保存。
+        latestAppliedRevision:
+          type: integer
+          minimum: 0
+          description: 現在反映済みの版。0は未反映。
+    Error:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      - message
+      - requestId
+      properties:
+        code:
+          type: string
+          enum:
+          - INVALID_REQUEST
+          - UNAUTHENTICATED
+          - FORBIDDEN
+          - NOT_FOUND
+          - REVISION_CONFLICT
+          - PAYLOAD_REJECTED
+          - RATE_LIMITED
+          - INTERNAL_ERROR
+          - UNAVAILABLE
+        message:
+          type: string
+          description: PIIや内部例外を含まない説明。
+          maxLength: 300
+        requestId:
+          type: string
+          description: ログ照合ID
+          maxLength: 100
+  responses:
+    InvalidRequest:
+      description: パスと本文のID/版の不一致、JSON・スキーマ違反。
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthenticated:
+      description: 認証なし・無効。
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: 呼出元に連携権限なし。
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: 該当ID/版の受信記録なし。
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    RevisionConflict:
+      description: 同じ申請ID/版に異なる本文。再提出版の逆行や受付日時の変更も対象。
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    PayloadRejected:
+      description: 持出許可・マスク・理由文の検査で拒否。
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    RateLimited:
+      description: 流量超過。
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      headers:
+        Retry-After:
+          description: 再送までの秒数。
+          schema:
+            type: integer
+            minimum: 1
+    InternalError:
+      description: サーバー内部エラー。
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unavailable:
+      description: 一時的に利用不可。
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      headers:
+        Retry-After:
+          description: 再送までの秒数。
+          schema:
+            type: integer
+            minimum: 1
+x-status: DRAFT
+x-source-thread:
+  title: 管理システム
+  threadId: 01a147fb-b740-7e13-8fb7-2cf9e7b565ae
+x-open-questions:
+- 通常経路（EventBridge）と管理アカウント内の照会・検証用HTTPS APIの運用
+- API Gatewayを公開エンドポイントのままIAM認可とするか、Private API相当の閉域要件を追加するか
+- NIFTY ID・マスク情報・formrun IDの持出許可
+- 再提出・確定後の再審査運用
+- キャンペーン・販路コード体系

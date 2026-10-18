@@ -1,0 +1,5 @@
+services:
+  swagger-ui:
+    build: .
+    ports:
+      - "127.0.0.1:${SWAGGER_PORT:-8081}:8080"

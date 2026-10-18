@@ -1,0 +1,6 @@
+project_name             = "point-award"
+environment              = "dev"
+aws_region               = "ap-northeast-1"
+l3_aws_profile           = "l3-dev"
+l3_account_id            = "222222222222"
+management_event_bus_arn = "arn:aws:events:ap-northeast-1:111111111111:event-bus/point-award-dev-l3-results"
