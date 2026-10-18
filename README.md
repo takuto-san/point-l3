@@ -1,4 +1,4 @@
-# L3環境 — point-l3
+# L3環境
 
 ## 概要
 
@@ -10,7 +10,6 @@
 
 | 名前 | バージョン |
 |---|---|
-| Git | 2.x |
 | Docker / Docker Compose | Compose v2 |
 | Terraform | 1.6.0以上 |
 | AWS CLI | v2 |
