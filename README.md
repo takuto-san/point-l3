@@ -117,7 +117,7 @@ point / point-l3 の両リポジトリに、以下の同一画像を掲載する
 
 [draw.io編集用ファイル](docs/architecture-aws.drawio) ／ [draw.io出力SVG](docs/architecture-aws.svg) ／ [Terravision設計定義](docs/architecture.tvg.json)
 
-編集用の `.drawio` はAWS4サービスアイコンと編集可能なAWS Account枠・矢印で構成する。[AWSの図作成記事](https://aws.amazon.com/blogs/machine-learning/build-aws-architecture-diagrams-using-amazon-q-cli-and-mcp/) が示すサービス・接続・境界の整理を、draw.io形式に合わせて適用した。READMEの画像もこのdraw.ioファイルから出力している。
+編集用の `.drawio` はAWS4サービスアイコンを使用し、AWS Cloud、AWS Account、機能グループ、番号付きの主処理フローで構成する。[draw.ioのAWS構成図ガイド](https://www.drawio.com/docs/diagram-types/aws-diagrams/) と [AWS Reference Architecture Diagrams](https://docs.aws.amazon.com/reference-architecture-diagrams/) の表現を参考にしている。READMEの画像もこのdraw.ioファイルから出力している。
 
 - **L3アカウント（既存）**：Webhook受付 → 受付Lambda → S3へ顧客・申請・証跡データを保存。保存後にStep Functionsで精査を開始し、Textract、本人確認Lambda、付与判定Lambda、Bedrock、持出ゲート・送信LambdaをL3内で利用する。
 - **本人確認Lambda**：抽出した氏名とL3内の回線契約者情報を照合し、結果・理由を返す。回線契約情報の取得元・接続方式は詳細設計で確定する。Webhookを保存するS3を、照合用の正しい回線契約情報の取得元と同一視しない。
