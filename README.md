@@ -22,7 +22,6 @@ git clone https://github.com/takuto-san/point-l3.git
 cd point-l3
 docker compose up --build -d --wait
 docker compose ps
-bash terraform-generate.sh
 cp terraform/terraform.tfvars.example terraform/terraform.tfvars
 terraform -chdir=terraform init
 terraform -chdir=terraform fmt -check
@@ -37,13 +36,10 @@ point-l3/
 ├── openapi.yaml
 ├── Dockerfile
 ├── docker-compose.yml
-├── terraform-generate.sh
-├── .terraform-templates/
-│   ├── *.tf.tmpl
-│   ├── terraform.tfvars.example.tmpl
-│   └── .terraform.lock.hcl.tmpl
 ├── terraform/
-│   └── README.md
+│   ├── README.md
+│   ├── *.tf
+│   └── terraform.tfvars.example
 └── docs/
     ├── architecture-aws.drawio
     └── system-overview.png
