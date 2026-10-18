@@ -1,214 +1,177 @@
 <?xml version='1.0' encoding='utf-8'?>
 <mxfile host="app.diagrams.net" type="device" pages="1">
-  <diagram id="point-aws-architecture" name="AWS構成図">
-    <mxGraphModel dx="2400" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1050" math="0" shadow="0">
+  <diagram id="awsdac-point" name="AWS Architecture">
+    <mxGraphModel dx="2820" dy="820" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2820" pageHeight="820" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="title" value="解約金還元申請システム — AWS アーキテクチャ" vertex="1" parent="1" style="text;html=0;whiteSpace=wrap;verticalAlign=middle;align=left;fontFamily=Arial;fontSize=26;fontStyle=1;fontColor=#232F3E;strokeColor=none;fillColor=none;">
-          <mxGeometry x="145" y="20" width="1900" height="42" as="geometry" />
+        <mxCell id="aws-cloud" value="AWS Cloud" vertex="1" parent="1" style="swimlane;container=1;collapsible=0;recursiveResize=0;horizontal=1;rounded=0;startSize=50;html=0;fillColor=#FFFFFF;swimlaneFillColor=#FFFFFF;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=18;fontStyle=1;fontColor=#232F3E;align=left;spacingLeft=18;verticalAlign=top;spacingTop=9;">
+          <mxGeometry as="geometry" x="210" y="35" width="2550" height="735" />
         </mxCell>
-        <mxCell id="aws-cloud" value="AWS Cloud" vertex="1" parent="1" style="swimlane;container=1;collapsible=0;recursiveResize=0;startSize=42;horizontal=1;rounded=0;html=0;fillColor=#FFFFFF;swimlaneFillColor=#FFFFFF;strokeColor=#879196;strokeWidth=2;fontFamily=Arial;fontSize=18;fontStyle=1;fontColor=#232F3E;align=left;spacingLeft=18;verticalAlign=top;spacingTop=8;">
-          <mxGeometry x="145" y="80" width="2220" height="805" as="geometry" />
+        <mxCell id="l3-account" value="AWS Account  |  L3アカウント（既存）" vertex="1" parent="1" style="swimlane;container=1;collapsible=0;recursiveResize=0;horizontal=1;rounded=0;startSize=48;html=0;fillColor=#FFFFFF;swimlaneFillColor=#FFFFFF;strokeColor=#E7157B;strokeWidth=2;fontFamily=Arial;fontSize=18;fontStyle=1;fontColor=#232F3E;align=left;spacingLeft=18;verticalAlign=top;spacingTop=9;">
+          <mxGeometry as="geometry" x="270" y="115" width="1410" height="580" />
         </mxCell>
-        <mxCell id="aws_account.l3_existing" value="AWS Account  |  L3アカウント（既存）" vertex="1" parent="1" style="swimlane;container=1;collapsible=0;recursiveResize=0;startSize=46;horizontal=1;rounded=0;html=0;fillColor=#FFFFFF;swimlaneFillColor=#FFFFFF;strokeColor=#8A2BE2;strokeWidth=2;fontFamily=Arial;fontSize=18;fontStyle=1;fontColor=#232F3E;align=left;spacingLeft=16;verticalAlign=top;spacingTop=9;">
-          <mxGeometry x="180" y="145" width="1340" height="700" as="geometry" />
+        <mxCell id="management-account" value="AWS Account  |  管理システム用アカウント" vertex="1" parent="1" style="swimlane;container=1;collapsible=0;recursiveResize=0;horizontal=1;rounded=0;startSize=48;html=0;fillColor=#FFFFFF;swimlaneFillColor=#FFFFFF;strokeColor=#E7157B;strokeWidth=2;fontFamily=Arial;fontSize=18;fontStyle=1;fontColor=#232F3E;align=left;spacingLeft=18;verticalAlign=top;spacingTop=9;">
+          <mxGeometry as="geometry" x="1720" y="115" width="990" height="580" />
         </mxCell>
-        <mxCell id="aws_account.management" value="AWS Account  |  管理システム用アカウント" vertex="1" parent="1" style="swimlane;container=1;collapsible=0;recursiveResize=0;startSize=46;horizontal=1;rounded=0;html=0;fillColor=#FFFFFF;swimlaneFillColor=#FFFFFF;strokeColor=#147EBA;strokeWidth=2;fontFamily=Arial;fontSize=18;fontStyle=1;fontColor=#232F3E;align=left;spacingLeft=16;verticalAlign=top;spacingTop=9;">
-          <mxGeometry x="1560" y="145" width="760" height="700" as="geometry" />
+        <mxCell id="e01" value="Webhook" edge="1" parent="1" source="formrun" target="l3-api" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="group-l3-ingress" value="受付" vertex="1" parent="aws_account.l3_existing" style="swimlane;container=0;collapsible=0;startSize=34;horizontal=1;rounded=0;html=0;fillColor=#FAFAFA;swimlaneFillColor=#FAFAFA;strokeColor=#AAB7B8;strokeWidth=1;dashed=1;dashPattern=6 4;fontFamily=Arial;fontSize=14;fontStyle=1;fontColor=#545B64;align=left;spacingLeft=12;verticalAlign=top;spacingTop=7;">
-          <mxGeometry x="35" y="105" width="390" height="280" as="geometry" />
+        <mxCell id="e02" value="" edge="1" parent="1" source="l3-api" target="l3-ingest" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="group-l3-data" value="顧客データ保管" vertex="1" parent="aws_account.l3_existing" style="swimlane;container=0;collapsible=0;startSize=34;horizontal=1;rounded=0;html=0;fillColor=#FAFAFA;swimlaneFillColor=#FAFAFA;strokeColor=#AAB7B8;strokeWidth=1;dashed=1;dashPattern=6 4;fontFamily=Arial;fontSize=14;fontStyle=1;fontColor=#545B64;align=left;spacingLeft=12;verticalAlign=top;spacingTop=7;">
-          <mxGeometry x="450" y="105" width="180" height="280" as="geometry" />
+        <mxCell id="e03" value="原本保存" edge="1" parent="1" source="l3-ingest" target="evidence" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="group-l3-review" value="本人確認・付与判定ワークフロー" vertex="1" parent="aws_account.l3_existing" style="swimlane;container=0;collapsible=0;startSize=34;horizontal=1;rounded=0;html=0;fillColor=#FAFAFA;swimlaneFillColor=#FAFAFA;strokeColor=#AAB7B8;strokeWidth=1;dashed=1;dashPattern=6 4;fontFamily=Arial;fontSize=14;fontStyle=1;fontColor=#545B64;align=left;spacingLeft=12;verticalAlign=top;spacingTop=7;">
-          <mxGeometry x="655" y="105" width="535" height="520" as="geometry" />
+        <mxCell id="e04" value="" edge="1" parent="1" source="evidence" target="workflow" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="group-l3-egress" value="アカウント外連携" vertex="1" parent="aws_account.l3_existing" style="swimlane;container=0;collapsible=0;startSize=34;horizontal=1;rounded=0;html=0;fillColor=#FAFAFA;swimlaneFillColor=#FAFAFA;strokeColor=#AAB7B8;strokeWidth=1;dashed=1;dashPattern=6 4;fontFamily=Arial;fontSize=14;fontStyle=1;fontColor=#545B64;align=left;spacingLeft=12;verticalAlign=top;spacingTop=7;">
-          <mxGeometry x="1195" y="105" width="130" height="520" as="geometry" />
+        <mxCell id="e05" value="" edge="1" parent="1" source="workflow" target="textract" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="group-mgmt-intake" value="結果取込" vertex="1" parent="aws_account.management" style="swimlane;container=0;collapsible=0;startSize=34;horizontal=1;rounded=0;html=0;fillColor=#FAFAFA;swimlaneFillColor=#FAFAFA;strokeColor=#AAB7B8;strokeWidth=1;dashed=1;dashPattern=6 4;fontFamily=Arial;fontSize=14;fontStyle=1;fontColor=#545B64;align=left;spacingLeft=12;verticalAlign=top;spacingTop=7;">
-          <mxGeometry x="35" y="105" width="690" height="390" as="geometry" />
-        </mxCell>
-        <mxCell id="group-mgmt-ui" value="管理画面" vertex="1" parent="aws_account.management" style="swimlane;container=0;collapsible=0;startSize=34;horizontal=1;rounded=0;html=0;fillColor=#FAFAFA;swimlaneFillColor=#FAFAFA;strokeColor=#AAB7B8;strokeWidth=1;dashed=1;dashPattern=6 4;fontFamily=Arial;fontSize=14;fontStyle=1;fontColor=#545B64;align=left;spacingLeft=12;verticalAlign=top;spacingTop=7;">
-          <mxGeometry x="35" y="500" width="520" height="175" as="geometry" />
-        </mxCell>
-        <mxCell id="flow-01" value="Webhook" edge="1" parent="1" source="external.formrun" target="aws_apigatewayv2_api.l3_webhook" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="flow-02" value="" edge="1" parent="1" source="actor.reviewers" target="aws_cloudfront_distribution.admin" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="flow-03" value="" edge="1" parent="1" source="aws_apigatewayv2_api.l3_webhook" target="aws_lambda_function.l3_ingest" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="flow-04" value="原本を保存" edge="1" parent="1" source="aws_lambda_function.l3_ingest" target="aws_s3_bucket.l3_customer_evidence" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="flow-05" value="" edge="1" parent="1" source="aws_lambda_function.l3_ingest" target="aws_sfn_state_machine.l3_review" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=1;">
-          <mxGeometry relative="1" as="geometry">
+        <mxCell id="e06" value="" edge="1" parent="1" source="textract" target="identity" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=0.35;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1">
             <Array as="points">
-              <mxPoint x="530" y="450" />
-              <mxPoint x="860" y="450" />
+              <mxPoint x="1176" y="430" />
+              <mxPoint x="1060" y="430" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="flow-06" value="" edge="1" parent="1" source="aws_sfn_state_machine.l3_review" target="aws_textract.ocr" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="flow-07" value="原本を参照" edge="1" parent="1" source="aws_s3_bucket.l3_customer_evidence" target="aws_textract.ocr" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=5 4;strokeWidth=1;exitX=0.5;exitY=1;entryX=0.5;entryY=1;">
-          <mxGeometry relative="1" as="geometry">
+        <mxCell id="e07" value="" edge="1" parent="1" source="textract" target="award" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=0.65;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1">
             <Array as="points">
-              <mxPoint x="740" y="500" />
-              <mxPoint x="1050" y="500" />
+              <mxPoint x="1200" y="450" />
+              <mxPoint x="1260" y="450" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="flow-08" value="" edge="1" parent="1" source="aws_textract.ocr" target="aws_lambda_function.l3_identity" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="e08" value="" edge="1" parent="1" source="award" target="bedrock" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="flow-09" value="" edge="1" parent="1" source="aws_textract.ocr" target="aws_lambda_function.l3_award" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=1;">
-          <mxGeometry relative="1" as="geometry">
+        <mxCell id="e09" value="" edge="1" parent="1" source="identity" target="export" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0.5;entryY=1;">
+          <mxGeometry as="geometry" relative="1">
             <Array as="points">
-              <mxPoint x="1091" y="500" />
-              <mxPoint x="1091" y="575" />
+              <mxPoint x="1150" y="600" />
+              <mxPoint x="1527" y="600" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="flow-10" value="" edge="1" parent="1" source="aws_lambda_function.l3_identity" target="aws_lambda_function.l3_export_gate" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=1;">
-          <mxGeometry relative="1" as="geometry">
+        <mxCell id="e10" value="" edge="1" parent="1" source="award" target="export" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0.5;entryY=1;">
+          <mxGeometry as="geometry" relative="1">
             <Array as="points">
-              <mxPoint x="1321" y="366" />
-              <mxPoint x="1391" y="366" />
+              <mxPoint x="1350" y="620" />
+              <mxPoint x="1527" y="620" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="flow-11" value="" edge="1" parent="1" source="aws_lambda_function.l3_award" target="aws_bedrock.judgement" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="e11" value="許可項目のみ" edge="1" parent="1" source="export" target="result-bus" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#147EBA;strokeWidth=3;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="flow-12" value="" edge="1" parent="1" source="aws_lambda_function.l3_award" target="aws_lambda_function.l3_export_gate" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=1;">
-          <mxGeometry relative="1" as="geometry">
+        <mxCell id="e12" value="" edge="1" parent="1" source="result-bus" target="intake-queue" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e13" value="" edge="1" parent="1" source="intake-queue" target="receiver" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e14" value="" edge="1" parent="1" source="receiver" target="applications" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e15" value="失敗" edge="1" parent="1" source="intake-queue" target="intake-dlq" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=5 4;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e16" value="" edge="1" parent="1" source="reviewer" target="admin-cf" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry as="geometry" relative="1">
             <Array as="points">
-              <mxPoint x="1091" y="690" />
-              <mxPoint x="1391" y="690" />
+              <mxPoint x="145" y="720" />
+              <mxPoint x="1745" y="720" />
+              <mxPoint x="1745" y="557" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="flow-13" value="許可項目のみ" edge="1" parent="1" source="aws_lambda_function.l3_export_gate" target="aws_cloudwatch_event_bus.results" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;strokeColor=#147EBA;strokeWidth=3;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="e17" value="" edge="1" parent="1" source="admin-cf" target="admin-s3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="flow-14" value="" edge="1" parent="1" source="aws_cloudwatch_event_bus.results" target="aws_sqs_queue.intake" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="e18" value="認証" edge="1" parent="1" source="admin-cf" target="staff-cognito" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=5 4;exitX=0.5;exitY=0;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1827" y="505" />
+              <mxPoint x="2197" y="505" />
+            </Array>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="flow-15" value="" edge="1" parent="1" source="aws_sqs_queue.intake" target="aws_lambda_function.receiver" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="e19" value="" edge="1" parent="1" source="admin-cf" target="management-api" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=1;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1827" y="660" />
+              <mxPoint x="2397" y="660" />
+            </Array>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="flow-16" value="失敗" edge="1" parent="1" source="aws_sqs_queue.intake" target="aws_sqs_queue.intake_dlq" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=5 4;strokeWidth=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="e20" value="" edge="1" parent="1" source="management-api" target="receiver" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=0;entryX=0.5;entryY=1;">
+          <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="flow-17" value="" edge="1" parent="1" source="aws_lambda_function.receiver" target="aws_dynamodb_table.applications" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="formrun" value="formrun" vertex="1" parent="1" style="shape=mxgraph.aws4.user;html=0;whiteSpace=wrap;align=center;verticalAlign=top;verticalLabelPosition=bottom;fontFamily=Arial;fontSize=16;fontStyle=1;fontColor=#232F3E;fillColor=#232F3E;strokeColor=#232F3E;labelWidth=130;">
+          <mxGeometry as="geometry" x="65" y="230" width="58" height="58" />
         </mxCell>
-        <mxCell id="flow-18" value="" edge="1" parent="1" source="aws_apigatewayv2_api.management" target="aws_lambda_function.receiver" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="reviewer" value="審査担当者" vertex="1" parent="1" style="shape=mxgraph.aws4.user;html=0;whiteSpace=wrap;align=center;verticalAlign=top;verticalLabelPosition=bottom;fontFamily=Arial;fontSize=16;fontStyle=1;fontColor=#232F3E;fillColor=#232F3E;strokeColor=#232F3E;labelWidth=130;">
+          <mxGeometry as="geometry" x="65" y="650" width="58" height="58" />
         </mxCell>
-        <mxCell id="flow-19" value="" edge="1" parent="1" source="aws_cloudfront_distribution.admin" target="aws_s3_bucket.admin_web" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="l3-api" value="Amazon API Gateway&#10;Webhook受付" vertex="1" parent="l3-account" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#8C4FFF;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.api_gateway;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=150;spacingTop=5;">
+          <mxGeometry as="geometry" x="80" y="150" width="74" height="74" />
         </mxCell>
-        <mxCell id="external.formrun" value="formrun&#10;申請・証跡" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontStyle=1;fontColor=#232F3E;fillColor=#FFFFFF;strokeColor=#879196;strokeWidth=1;">
-          <mxGeometry x="10" y="330" width="140" height="76" as="geometry" />
+        <mxCell id="l3-ingest" value="AWS Lambda&#10;申請・証跡取込" vertex="1" parent="l3-account" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#FF9900;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=150;spacingTop=5;">
+          <mxGeometry as="geometry" x="280" y="150" width="74" height="74" />
         </mxCell>
-        <mxCell id="actor.reviewers" value="審査担当者" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontStyle=1;fontColor=#232F3E;fillColor=#FFFFFF;strokeColor=#879196;strokeWidth=1;">
-          <mxGeometry x="1840" y="920" width="140" height="76" as="geometry" />
+        <mxCell id="evidence" value="Amazon S3&#10;顧客情報・証跡" vertex="1" parent="l3-account" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#3F8624;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.s3;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=150;spacingTop=5;">
+          <mxGeometry as="geometry" x="480" y="150" width="74" height="74" />
         </mxCell>
-        <mxCell id="aws_apigatewayv2_api.l3_webhook" value="Amazon API Gateway&#10;Webhook受付" vertex="1" parent="aws_account.l3_existing" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#8C4FFF;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.api_gateway;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
-          <mxGeometry x="80" y="180" width="72" height="72" as="geometry" />
+        <mxCell id="workflow" value="AWS Step Functions&#10;精査ワークフロー" vertex="1" parent="l3-account" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#E7157B;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.step_functions;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=150;spacingTop=5;">
+          <mxGeometry as="geometry" x="680" y="150" width="74" height="74" />
         </mxCell>
-        <mxCell id="aws_lambda_function.l3_ingest" value="AWS Lambda&#10;申請・証跡取込" vertex="1" parent="aws_account.l3_existing" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#FF9900;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
-          <mxGeometry x="260" y="180" width="72" height="72" as="geometry" />
+        <mxCell id="textract" value="Amazon Textract&#10;証跡抽出" vertex="1" parent="l3-account" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#01A88D;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.textract;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=150;spacingTop=5;">
+          <mxGeometry as="geometry" x="880" y="150" width="74" height="74" />
         </mxCell>
-        <mxCell id="aws_s3_bucket.l3_customer_evidence" value="Amazon S3&#10;顧客情報・証跡" vertex="1" parent="aws_account.l3_existing" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#3F8624;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.s3;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
-          <mxGeometry x="470" y="180" width="72" height="72" as="geometry" />
+        <mxCell id="export" value="AWS Lambda&#10;持出制御" vertex="1" parent="l3-account" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#FF9900;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=150;spacingTop=5;">
+          <mxGeometry as="geometry" x="1215" y="150" width="74" height="74" />
         </mxCell>
-        <mxCell id="aws_sfn_state_machine.l3_review" value="AWS Step Functions&#10;精査ワークフロー" vertex="1" parent="aws_account.l3_existing" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#E7157B;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.step_functions;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
-          <mxGeometry x="680" y="180" width="72" height="72" as="geometry" />
+        <mxCell id="identity" value="AWS Lambda&#10;本人確認" vertex="1" parent="l3-account" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#FF9900;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=150;spacingTop=5;">
+          <mxGeometry as="geometry" x="750" y="365" width="74" height="74" />
         </mxCell>
-        <mxCell id="aws_textract.ocr" value="Amazon Textract&#10;証跡抽出" vertex="1" parent="aws_account.l3_existing" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#DD344C;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.textract;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
-          <mxGeometry x="870" y="180" width="72" height="72" as="geometry" />
+        <mxCell id="award" value="AWS Lambda&#10;付与判定" vertex="1" parent="l3-account" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#FF9900;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=150;spacingTop=5;">
+          <mxGeometry as="geometry" x="950" y="365" width="74" height="74" />
         </mxCell>
-        <mxCell id="aws_lambda_function.l3_identity" value="AWS Lambda&#10;本人確認" vertex="1" parent="aws_account.l3_existing" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#FF9900;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
-          <mxGeometry x="1060" y="180" width="72" height="72" as="geometry" />
+        <mxCell id="bedrock" value="Amazon Bedrock&#10;判定支援" vertex="1" parent="l3-account" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#01A88D;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=150;spacingTop=5;">
+          <mxGeometry as="geometry" x="1150" y="365" width="74" height="74" />
         </mxCell>
-        <mxCell id="aws_lambda_function.l3_award" value="AWS Lambda&#10;付与判定" vertex="1" parent="aws_account.l3_existing" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#FF9900;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
-          <mxGeometry x="870" y="430" width="72" height="72" as="geometry" />
+        <mxCell id="result-bus" value="Amazon EventBridge&#10;結果イベント" vertex="1" parent="management-account" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#E7157B;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.eventbridge;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=150;spacingTop=5;">
+          <mxGeometry as="geometry" x="70" y="150" width="74" height="74" />
         </mxCell>
-        <mxCell id="aws_bedrock.judgement" value="Amazon Bedrock&#10;判定支援" vertex="1" parent="aws_account.l3_existing" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#01A88D;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
-          <mxGeometry x="1060" y="430" width="72" height="72" as="geometry" />
+        <mxCell id="intake-queue" value="Amazon SQS&#10;取込キュー" vertex="1" parent="management-account" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#E7157B;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.sqs;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=150;spacingTop=5;">
+          <mxGeometry as="geometry" x="270" y="150" width="74" height="74" />
         </mxCell>
-        <mxCell id="aws_lambda_function.l3_export_gate" value="AWS Lambda&#10;持出制御" vertex="1" parent="aws_account.l3_existing" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#FF9900;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
-          <mxGeometry x="1210" y="305" width="72" height="72" as="geometry" />
+        <mxCell id="receiver" value="AWS Lambda&#10;受信・版管理" vertex="1" parent="management-account" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#FF9900;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=150;spacingTop=5;">
+          <mxGeometry as="geometry" x="470" y="150" width="74" height="74" />
         </mxCell>
-        <mxCell id="aws_cloudwatch_event_bus.results" value="Amazon EventBridge&#10;結果イベント" vertex="1" parent="aws_account.management" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#E7157B;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.eventbridge;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
-          <mxGeometry x="70" y="180" width="72" height="72" as="geometry" />
+        <mxCell id="applications" value="Amazon DynamoDB&#10;申請・版履歴" vertex="1" parent="management-account" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#527FFF;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.dynamodb;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=150;spacingTop=5;">
+          <mxGeometry as="geometry" x="670" y="150" width="74" height="74" />
         </mxCell>
-        <mxCell id="aws_sqs_queue.intake" value="Amazon SQS&#10;取込キュー" vertex="1" parent="aws_account.management" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#E7157B;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.sqs;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
-          <mxGeometry x="245" y="180" width="72" height="72" as="geometry" />
+        <mxCell id="intake-dlq" value="Amazon SQS&#10;DLQ" vertex="1" parent="management-account" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#E7157B;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.sqs;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=150;spacingTop=5;">
+          <mxGeometry as="geometry" x="270" y="305" width="74" height="74" />
         </mxCell>
-        <mxCell id="aws_sqs_queue.intake_dlq" value="Amazon SQS&#10;DLQ" vertex="1" parent="aws_account.management" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#E7157B;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.sqs;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
-          <mxGeometry x="245" y="350" width="72" height="72" as="geometry" />
+        <mxCell id="admin-cf" value="Amazon CloudFront&#10;管理画面配信" vertex="1" parent="management-account" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#8C4FFF;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cloudfront;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=150;spacingTop=5;">
+          <mxGeometry as="geometry" x="70" y="405" width="74" height="74" />
         </mxCell>
-        <mxCell id="aws_lambda_function.receiver" value="AWS Lambda&#10;受信・版管理" vertex="1" parent="aws_account.management" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#FF9900;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
-          <mxGeometry x="420" y="180" width="72" height="72" as="geometry" />
+        <mxCell id="admin-s3" value="Amazon S3&#10;静的ファイル" vertex="1" parent="management-account" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#3F8624;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.s3;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=150;spacingTop=5;">
+          <mxGeometry as="geometry" x="270" y="405" width="74" height="74" />
         </mxCell>
-        <mxCell id="aws_dynamodb_table.applications" value="Amazon DynamoDB&#10;申請・版履歴" vertex="1" parent="aws_account.management" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#527FFF;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.dynamodb;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
-          <mxGeometry x="595" y="180" width="72" height="72" as="geometry" />
+        <mxCell id="staff-cognito" value="Amazon Cognito&#10;社内認証" vertex="1" parent="management-account" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#DD344C;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cognito;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=150;spacingTop=5;">
+          <mxGeometry as="geometry" x="470" y="405" width="74" height="74" />
         </mxCell>
-        <mxCell id="aws_apigatewayv2_api.management" value="Amazon API Gateway&#10;管理API" vertex="1" parent="aws_account.management" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#8C4FFF;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.api_gateway;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
-          <mxGeometry x="420" y="350" width="72" height="72" as="geometry" />
+        <mxCell id="management-api" value="Amazon API Gateway&#10;管理API" vertex="1" parent="management-account" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#8C4FFF;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.api_gateway;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=150;spacingTop=5;">
+          <mxGeometry as="geometry" x="670" y="405" width="74" height="74" />
         </mxCell>
-        <mxCell id="aws_cloudfront_distribution.admin" value="Amazon CloudFront&#10;管理画面" vertex="1" parent="aws_account.management" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#8C4FFF;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cloudfront;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
-          <mxGeometry x="70" y="545" width="72" height="72" as="geometry" />
-        </mxCell>
-        <mxCell id="aws_s3_bucket.admin_web" value="Amazon S3&#10;静的ファイル" vertex="1" parent="aws_account.management" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#3F8624;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.s3;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
-          <mxGeometry x="245" y="545" width="72" height="72" as="geometry" />
-        </mxCell>
-        <mxCell id="aws_cognito_user_pool.staff" value="Amazon Cognito&#10;社内認証" vertex="1" parent="aws_account.management" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#DD344C;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cognito;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
-          <mxGeometry x="420" y="545" width="72" height="72" as="geometry" />
-        </mxCell>
-        <mxCell id="step-aws_apigatewayv2_api.l3_webhook" value="1" vertex="1" parent="aws_account.l3_existing" style="ellipse;html=0;aspect=fixed;fillColor=#147EBA;strokeColor=#FFFFFF;strokeWidth=2;fontFamily=Arial;fontSize=13;fontStyle=1;fontColor=#FFFFFF;align=center;verticalAlign=middle;">
-          <mxGeometry x="64" y="165" width="28" height="28" as="geometry" />
-        </mxCell>
-        <mxCell id="step-aws_lambda_function.l3_ingest" value="2" vertex="1" parent="aws_account.l3_existing" style="ellipse;html=0;aspect=fixed;fillColor=#147EBA;strokeColor=#FFFFFF;strokeWidth=2;fontFamily=Arial;fontSize=13;fontStyle=1;fontColor=#FFFFFF;align=center;verticalAlign=middle;">
-          <mxGeometry x="244" y="165" width="28" height="28" as="geometry" />
-        </mxCell>
-        <mxCell id="step-aws_sfn_state_machine.l3_review" value="3" vertex="1" parent="aws_account.l3_existing" style="ellipse;html=0;aspect=fixed;fillColor=#147EBA;strokeColor=#FFFFFF;strokeWidth=2;fontFamily=Arial;fontSize=13;fontStyle=1;fontColor=#FFFFFF;align=center;verticalAlign=middle;">
-          <mxGeometry x="664" y="165" width="28" height="28" as="geometry" />
-        </mxCell>
-        <mxCell id="step-aws_textract.ocr" value="4" vertex="1" parent="aws_account.l3_existing" style="ellipse;html=0;aspect=fixed;fillColor=#147EBA;strokeColor=#FFFFFF;strokeWidth=2;fontFamily=Arial;fontSize=13;fontStyle=1;fontColor=#FFFFFF;align=center;verticalAlign=middle;">
-          <mxGeometry x="854" y="165" width="28" height="28" as="geometry" />
-        </mxCell>
-        <mxCell id="step-aws_lambda_function.l3_identity" value="5" vertex="1" parent="aws_account.l3_existing" style="ellipse;html=0;aspect=fixed;fillColor=#147EBA;strokeColor=#FFFFFF;strokeWidth=2;fontFamily=Arial;fontSize=13;fontStyle=1;fontColor=#FFFFFF;align=center;verticalAlign=middle;">
-          <mxGeometry x="1044" y="165" width="28" height="28" as="geometry" />
-        </mxCell>
-        <mxCell id="step-aws_lambda_function.l3_export_gate" value="6" vertex="1" parent="aws_account.l3_existing" style="ellipse;html=0;aspect=fixed;fillColor=#147EBA;strokeColor=#FFFFFF;strokeWidth=2;fontFamily=Arial;fontSize=13;fontStyle=1;fontColor=#FFFFFF;align=center;verticalAlign=middle;">
-          <mxGeometry x="1194" y="290" width="28" height="28" as="geometry" />
-        </mxCell>
-        <mxCell id="step-aws_cloudwatch_event_bus.results" value="7" vertex="1" parent="aws_account.management" style="ellipse;html=0;aspect=fixed;fillColor=#147EBA;strokeColor=#FFFFFF;strokeWidth=2;fontFamily=Arial;fontSize=13;fontStyle=1;fontColor=#FFFFFF;align=center;verticalAlign=middle;">
-          <mxGeometry x="54" y="165" width="28" height="28" as="geometry" />
-        </mxCell>
-        <mxCell id="step-aws_lambda_function.receiver" value="8" vertex="1" parent="aws_account.management" style="ellipse;html=0;aspect=fixed;fillColor=#147EBA;strokeColor=#FFFFFF;strokeWidth=2;fontFamily=Arial;fontSize=13;fontStyle=1;fontColor=#FFFFFF;align=center;verticalAlign=middle;">
-          <mxGeometry x="404" y="165" width="28" height="28" as="geometry" />
-        </mxCell>
-        <mxCell id="l3-policy" value="顧客情報・証跡原本・OCR全文はL3アカウント内に保持" vertex="1" parent="1" style="text;html=0;whiteSpace=wrap;verticalAlign=middle;align=left;fontFamily=Arial;fontSize=14;fontStyle=1;fontColor=#545B64;strokeColor=none;fillColor=none;">
-          <mxGeometry x="220" y="790" width="900" height="28" as="geometry" />
-        </mxCell>
-        <mxCell id="transfer-policy" value="アカウント間連携: マスク済みの許可項目のみ" vertex="1" parent="1" style="text;html=0;whiteSpace=wrap;verticalAlign=middle;align=center;fontFamily=Arial;fontSize=14;fontStyle=1;fontColor=#147EBA;strokeColor=none;fillColor=none;">
-          <mxGeometry x="1210" y="875" width="700" height="28" as="geometry" />
-        </mxCell>
-        <mxCell id="footer" value="注: 追加予定の構成を含む論理構成図です。実際のデプロイ状態を示すものではありません。" vertex="1" parent="1" style="text;html=0;whiteSpace=wrap;verticalAlign=middle;align=left;fontFamily=Arial;fontSize=13;fontStyle=0;fontColor=#687078;strokeColor=none;fillColor=none;">
-          <mxGeometry x="145" y="1000" width="1800" height="26" as="geometry" />
+        <mxCell id="l3-note" value="顧客情報・証跡原本・OCR全文はL3アカウント内に保持" vertex="1" parent="l3-account" style="text;html=0;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=13;fontStyle=1;fontColor=#545B64;strokeColor=none;fillColor=none;">
+          <mxGeometry as="geometry" x="35" y="525" width="700" height="28" />
         </mxCell>
       </root>
     </mxGraphModel>
