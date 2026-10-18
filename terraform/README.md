@@ -4,6 +4,8 @@
 
 ![L3アカウントと管理アカウントを分離したAWS構成図](../docs/aws-architecture.png)
 
+VPC・AZ・サブネットとLambdaのVPC接続は目標構成であり、現時点のTerraformには未実装です。
+
 ## ディレクトリ構成
 
 ```text

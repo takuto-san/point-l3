@@ -43,12 +43,11 @@ Diagram:
       Children:
         - L3Ingress
         - L3Analysis
-        - L3Decision
+        - L3VPC
     L3Ingress:
       Type: AWS::Diagram::HorizontalStack
       Children:
         - WebhookApi
-        - IngestLambda
         - EvidenceBucket
     L3Analysis:
       Type: AWS::Diagram::HorizontalStack
@@ -56,10 +55,41 @@ Diagram:
         - ReviewWorkflow
         - Textract
         - Bedrock
-    L3Decision:
+    L3VPC:
+      Type: AWS::EC2::VPC
+      Title: L3処理VPC
+      Direction: vertical
+      Children:
+        - L3AZs
+    L3AZs:
       Type: AWS::Diagram::HorizontalStack
       Children:
+        - L3AZa
+        - L3AZc
+    L3AZa:
+      Type: AWS::EC2::AvailabilityZone
+      Title: ap-northeast-1a
+      Children:
+        - L3PrivateSubnetA
+    L3PrivateSubnetA:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Title: プライベートサブネット
+      Direction: vertical
+      Children:
+        - IngestLambda
         - IdentityLambda
+    L3AZc:
+      Type: AWS::EC2::AvailabilityZone
+      Title: ap-northeast-1c
+      Children:
+        - L3PrivateSubnetC
+    L3PrivateSubnetC:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Title: プライベートサブネット
+      Direction: vertical
+      Children:
         - AwardLambda
         - ExportLambda
 
@@ -106,6 +136,7 @@ Diagram:
       Children:
         - ManagementUI
         - ResultIngestion
+        - ManagementVPC
     ManagementUI:
       Type: AWS::Diagram::HorizontalStack
       Children:
@@ -126,13 +157,28 @@ Diagram:
       Children:
         - ResultBus
         - QueueGroup
-        - ReceiverLambda
         - ApplicationTable
     QueueGroup:
-      Type: AWS::Diagram::VerticalStack
+      Type: AWS::Diagram::HorizontalStack
       Children:
         - IntakeQueue
         - IntakeDLQ
+    ManagementVPC:
+      Type: AWS::EC2::VPC
+      Title: 管理処理VPC
+      Children:
+        - ManagementAZa
+    ManagementAZa:
+      Type: AWS::EC2::AvailabilityZone
+      Title: ap-northeast-1a
+      Children:
+        - ManagementPrivateSubnet
+    ManagementPrivateSubnet:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Title: プライベートサブネット
+      Children:
+        - ReceiverLambda
 
     AdminCloudFront:
       Type: AWS::CloudFront
@@ -170,15 +216,11 @@ Diagram:
       TargetArrowHead: { Type: Open }
       Type: orthogonal
     - Source: WebhookApi
-      SourcePosition: E
-      Target: IngestLambda
-      TargetPosition: W
+      SourcePosition: S
+      Target: L3VPC
+      TargetPosition: N
       TargetArrowHead: { Type: Open }
-    - Source: IngestLambda
-      SourcePosition: E
-      Target: EvidenceBucket
-      TargetPosition: W
-      TargetArrowHead: { Type: Open }
+      Type: orthogonal
     - Source: EvidenceBucket
       SourcePosition: S
       Target: ReviewWorkflow
@@ -190,33 +232,17 @@ Diagram:
       Target: Textract
       TargetPosition: W
       TargetArrowHead: { Type: Open }
-    - Source: ReviewWorkflow
-      SourcePosition: S
-      Target: IdentityLambda
-      TargetPosition: N
-      TargetArrowHead: { Type: Open }
-    - Source: Textract
-      SourcePosition: S
-      Target: IdentityLambda
-      TargetPosition: N
-      TargetArrowHead: { Type: Open }
-      Type: orthogonal
     - Source: Textract
       SourcePosition: E
       Target: Bedrock
       TargetPosition: W
       TargetArrowHead: { Type: Open }
-    - Source: Bedrock
-      SourcePosition: S
-      Target: AwardLambda
-      TargetPosition: N
-      TargetArrowHead: { Type: Open }
-      Type: orthogonal
     - Source: IdentityLambda
       SourcePosition: E
       Target: AwardLambda
       TargetPosition: W
       TargetArrowHead: { Type: Open }
+      Type: orthogonal
     - Source: AwardLambda
       SourcePosition: E
       Target: ExportLambda
@@ -233,21 +259,24 @@ Diagram:
       Target: IntakeQueue
       TargetPosition: W
       TargetArrowHead: { Type: Open }
+      Type: orthogonal
+    - Source: IntakeQueue
+      SourcePosition: E
+      Target: IntakeDLQ
+      TargetPosition: W
+      TargetArrowHead: { Type: Open }
     - Source: IntakeQueue
       SourcePosition: S
-      Target: IntakeDLQ
+      Target: ManagementVPC
       TargetPosition: N
       TargetArrowHead: { Type: Open }
-    - Source: IntakeQueue
-      SourcePosition: E
-      Target: ReceiverLambda
-      TargetPosition: W
-      TargetArrowHead: { Type: Open }
-    - Source: ReceiverLambda
+      Type: orthogonal
+    - Source: ManagementVPC
       SourcePosition: E
       Target: ApplicationTable
-      TargetPosition: W
+      TargetPosition: S
       TargetArrowHead: { Type: Open }
+      Type: orthogonal
     - Source: Reviewer
       SourcePosition: W
       Target: AdminCloudFront
@@ -264,9 +293,3 @@ Diagram:
       Target: ManagementApi
       TargetPosition: N
       TargetArrowHead: { Type: Open }
-    - Source: ManagementApi
-      SourcePosition: S
-      Target: ReceiverLambda
-      TargetPosition: N
-      TargetArrowHead: { Type: Open }
-      Type: orthogonal
