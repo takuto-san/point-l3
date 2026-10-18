@@ -1,0 +1,1 @@
+import resource_classes.aws.ml as ml; ml.tv_aws_textract = ml.Textract; ml.tv_aws_bedrock = ml.Bedrock

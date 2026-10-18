@@ -1,0 +1,78 @@
+{
+  "tv_aws_internet.formrun": [
+    "aws_apigatewayv2_api.l3_webhook"
+  ],
+  "tv_aws_users.reviewers": [
+    "aws_cloudfront_distribution.admin"
+  ],
+  "aws_account.l3_existing": [
+    "aws_apigatewayv2_api.l3_webhook",
+    "aws_lambda_function.l3_ingest",
+    "aws_s3_bucket.l3_customer_evidence",
+    "aws_sfn_state_machine.l3_review",
+    "tv_aws_textract.ocr",
+    "aws_lambda_function.l3_identity",
+    "aws_lambda_function.l3_award",
+    "tv_aws_bedrock.judgement",
+    "aws_lambda_function.l3_export_gate"
+  ],
+  "aws_account.management": [
+    "aws_cloudwatch_event_bus.results",
+    "aws_sqs_queue.intake",
+    "aws_sqs_queue.intake_dlq",
+    "aws_lambda_function.receiver",
+    "aws_dynamodb_table.applications",
+    "aws_apigatewayv2_api.management",
+    "aws_cloudfront_distribution.admin",
+    "aws_s3_bucket.admin_web",
+    "aws_cognito_user_pool.staff"
+  ],
+  "aws_apigatewayv2_api.l3_webhook": [
+    "aws_lambda_function.l3_ingest"
+  ],
+  "aws_lambda_function.l3_ingest": [
+    "aws_s3_bucket.l3_customer_evidence",
+    "aws_sfn_state_machine.l3_review"
+  ],
+  "aws_sfn_state_machine.l3_review": [
+    "tv_aws_textract.ocr"
+  ],
+  "aws_s3_bucket.l3_customer_evidence": [
+    "tv_aws_textract.ocr"
+  ],
+  "tv_aws_textract.ocr": [
+    "aws_lambda_function.l3_identity",
+    "aws_lambda_function.l3_award"
+  ],
+  "aws_lambda_function.l3_identity": [
+    "aws_lambda_function.l3_export_gate"
+  ],
+  "aws_lambda_function.l3_award": [
+    "tv_aws_bedrock.judgement",
+    "aws_lambda_function.l3_export_gate"
+  ],
+  "tv_aws_bedrock.judgement": [],
+  "aws_lambda_function.l3_export_gate": [
+    "aws_cloudwatch_event_bus.results"
+  ],
+  "aws_cloudwatch_event_bus.results": [
+    "aws_sqs_queue.intake"
+  ],
+  "aws_sqs_queue.intake": [
+    "aws_lambda_function.receiver",
+    "aws_sqs_queue.intake_dlq"
+  ],
+  "aws_sqs_queue.intake_dlq": [],
+  "aws_lambda_function.receiver": [
+    "aws_dynamodb_table.applications"
+  ],
+  "aws_dynamodb_table.applications": [],
+  "aws_apigatewayv2_api.management": [
+    "aws_lambda_function.receiver"
+  ],
+  "aws_cloudfront_distribution.admin": [
+    "aws_s3_bucket.admin_web"
+  ],
+  "aws_s3_bucket.admin_web": [],
+  "aws_cognito_user_pool.staff": []
+}

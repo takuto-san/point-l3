@@ -2,33 +2,21 @@
 set -euo pipefail
 
 project_dir="$(cd "$(dirname "$0")/.." && pwd)"
-diagram_dir="$(mktemp -d "${TMPDIR:-/tmp}/point-l3-diagram.XXXXXX")"
+diagram_dir="$(mktemp -d "${TMPDIR:-/tmp}/point-common-architecture.XXXXXX")"
 trap 'rm -r "$diagram_dir"' EXIT
 
-# Mount only a temporary copy of Terraform sources and a synthetic plan.
-mkdir -p "$diagram_dir/terraform" "$project_dir/docs"
-cp "$project_dir"/terraform/*.tf "$diagram_dir/terraform/"
-cp "$project_dir/tools/diagram-providers.tf.txt" "$diagram_dir/terraform/providers_override.tf"
-cp "$project_dir/terraform/terraform.tfvars.example" "$diagram_dir/terraform/diagram.tfvars"
-if [[ -f "$project_dir/terraform/.terraform.lock.hcl" ]]; then
-  cp "$project_dir/terraform/.terraform.lock.hcl" "$diagram_dir/terraform/"
-fi
+# Share a design graph, not credentials, source code, state, or a cloud account.
+cp "$project_dir/docs/architecture.tvg.json" "$diagram_dir/architecture.tvg.json"
+cp "$project_dir/docs/terravision.yml" "$diagram_dir/terravision.yml"
+cp "$project_dir/tools/terravision.Dockerfile" "$diagram_dir/Dockerfile"
+cp "$project_dir/tools/terravision-services.pth" "$diagram_dir/terravision-services.pth"
+docker build -t point-terravision:0.55.0-ja "$diagram_dir"
 
-export TF_DATA_DIR="$project_dir/terraform/.terraform"
-terraform -chdir="$diagram_dir/terraform" init -backend=false -input=false
-terraform -chdir="$diagram_dir/terraform" plan -refresh=false -input=false -var-file=diagram.tfvars -out="$diagram_dir/plan"
-terraform -chdir="$diagram_dir/terraform" show -json "$diagram_dir/plan" > "$diagram_dir/architecture.plan.json"
-terraform -chdir="$diagram_dir/terraform" graph > "$diagram_dir/architecture.graph.dot"
-
-# Keep IAM resources visible: --simplified would omit the L3 resources.
 for format in png svg; do
-  docker run --rm -v "$diagram_dir:/project" \
-    patrickchugh/terravision@sha256:6bb96c63cc6f072014c58a665e5c4cc53dd0f29976b4f6e774edf5536915e786 \
-    draw --source /project/terraform \
-    --planfile /project/architecture.plan.json \
-    --graphfile /project/architecture.graph.dot \
-    --outfile /project/architecture --format "$format" \
-    --title "Point Award - L3 Account"
+  docker run --rm -v "$diagram_dir:/project" point-terravision:0.55.0-ja \
+    draw --source /project/architecture.tvg.json \
+    --annotate /project/terravision.yml \
+    --outfile /project/architecture-aws --format "$format"
 done
 
 cp "$diagram_dir"/architecture-aws.dot.* "$project_dir/docs/"

@@ -89,12 +89,12 @@ terraform -chdir=terraform output -raw l3_export_role_arn
 
 [SVG版](docs/point-award-system-overview-with-screens.svg) ／ [編集用HTML](docs/point-award-system-overview-with-screens.html)
 
-既存図を内容変更せず掲載している。図中のTextractは当初の検討案で、現在のOCR/AIサービスは未選定。図の矢印・破線は元の凡例に従い、実装済み／未実装の区分は下の表を参照。
+システム概要図は既存図を内容変更せず掲載している。AWSサービスの配置は、下の共通AWS構成図でL3内のTextract・Bedrock・本人確認Lambdaとして具体化した。実装済み／未実装の区分は下の表を参照。
 
 L3側の処理方針：
 
 1. formrunのWebhookを起点に申請・証跡を取り込み、L3内で保持する。Webhookの実際のペイロードと証跡取得方式は未確定。
-2. OCR等で氏名・解約金総額を抽出し、本人確認とポイント付与判定を別々に実行する。OCR/AIサービスは未選定。
+2. L3内のTextract・Bedrockで証跡解析・判定支援を行い、本人確認Lambdaで回線契約者氏名と照合する。本人確認とポイント付与判定は別々に実行する。Textractの日本語証跡対応は下記の検証事項を参照。
 3. 本人確認は回線契約者の氏名と照合し、ポイント付与判定は営業・運用部門で確認済みのルールを参照する。AIの判定出力は「結果・理由」のみ。
 4. 完了した結果を持出審査・マスク処理に通し、版付きスナップショットで管理側へ順次送る。
 5. 担当者による「結果・理由」の修正と「確定」、メールリストの連携、配信完了後のマイページ結果更新は管理側が担当する。
@@ -111,15 +111,21 @@ L3側の処理方針：
 
 ## AWS構成図
 
-L3側TerraformのplanからTerravisionで生成した構成図。現在の定義は送信用IAMロールとインラインポリシーの2リソースのみ。IAMリソースを表示するため、簡略化オプションは使わずに生成する。
+point / point-l3 の両リポジトリに、以下の同一画像を掲載する。既存の **L3アカウント** と管理システム用アカウントを、AWS Accountの枠で分離した全体設計図。
 
-![Terravisionで生成したL3アカウントのAWS構成図](docs/architecture-aws.dot.png)
+![L3アカウントと管理アカウントを分離した共通AWS構成図](docs/architecture-aws.dot.png)
 
-[SVG版](docs/architecture-aws.dot.svg)
+[SVG版](docs/architecture-aws.dot.svg) ／ [Terravision設計定義](docs/architecture.tvg.json) ／ [ラベル・連携定義](docs/terravision.yml)
 
-図は仮のアカウントIDによる設計図。送信先EventBridgeはpoint側の定義なので、L3側の作成対象には含まれない。ロールの信頼先は `lambda.amazonaws.com`、許可する送信先は `management_event_bus_arn` のイベントバスのみ。
+- **L3アカウント（既存）**：Webhook受付 → 受付Lambda → S3へ顧客・申請・証跡データを保存。保存後にStep Functionsで精査を開始し、Textract、本人確認Lambda、付与判定Lambda、Bedrock、持出ゲート・送信LambdaをL3内で利用する。
+- **本人確認Lambda**：抽出した氏名とL3内の回線契約者情報を照合し、結果・理由を返す。回線契約情報の取得元・接続方式は詳細設計で確定する。Webhookを保存するS3を、照合用の正しい回線契約情報の取得元と同一視しない。
+- **管理アカウント**：持出許可済み結果をEventBridge → SQS → 受信Lambda → DynamoDBへ保存する。CloudFront・画面配信用S3・Cognito・管理側APIもこのアカウントに置く。
 
-API Gateway、証跡用S3・DB、OCR/AI、送信Lambda、VPC・サブネット・NATは現在のTerraformに含まれていない。業務処理の全体像は上のシステム概要を参照。
+L3の顧客情報・証跡原本・OCR全文は管理アカウントへ送らず、ゲートで許可した識別子・マスク情報・判定・理由・金額だけを連携する。
+
+この図は実装済みと追加予定の構成を含む**設計図**で、Terraform planや実環境のスキャン結果ではない。既存のL3アカウントを新規作成するものではなく、アカウント枠はデータ処理・権限の境界を表す。現在のL3用Terraformは送信用IAMのみで、Webhook受付・保存・解析・本人確認のコードやリソース定義は別途実装する。
+
+Textractは図のとおりL3内で利用する想定。ただし、[AWS公式の対応言語](https://docs.aws.amazon.com/textract/latest/dg/limits-document.html) に日本語は含まれないため、日本語証跡のOCRは補完・代替方式を含めて検証が必要。Bedrockのモデル・判定ルールも詳細設計で確定する。
 
 ## ディレクトリ構成
 
@@ -141,9 +147,14 @@ point-l3/
 │   ├── terraform.tfvars.example        # 設定例
 │   └── .terraform.lock.hcl             # AWSプロバイダの固定
 ├── tools/
-│   ├── diagram.sh                     # Terravision構成図の再生成
-│   └── diagram-providers.tf.txt        # 図生成専用の仮プロバイダ設定
+│   ├── diagram.sh                     # 共通AWS設計図の再生成（両リポジトリ共通）
+│   ├── diagram-terraform.sh           # このリポジトリのTerraformだけを図示
+│   ├── diagram-providers.tf.txt        # Terraform図用の仮プロバイダ設定
+│   ├── terravision.Dockerfile          # 日本語フォント対応の描画環境
+│   └── terravision-services.pth        # Textract/Bedrockの公式サービスアイコン名
 └── docs/
+    ├── architecture.tvg.json           # 両アカウントの共通設計図
+    ├── terravision.yml                 # 日本語ラベル・連携ラベル
     ├── architecture-aws.dot.png
     ├── architecture-aws.dot.svg
     ├── point-award-system-overview-with-screens.png
@@ -160,7 +171,7 @@ point-l3/
 | 結果送信用IAMロール・EventBridge送信権限 | point-l3 | Terraform定義あり |
 | 管理側API・共通AnalysisSnapshotの契約 | pointが正本、point-l3がコピー | OpenAPIあり |
 | formrun Webhook受付・証跡取得・保存 | point-l3 | 未実装 |
-| OCR・本人確認・ポイント付与判定 | point-l3 | 未実装。サービス・業務ルールの確定が必要 |
+| OCR・本人確認・ポイント付与判定 | point-l3 | 未実装。L3内のTextract・Bedrock・本人確認Lambdaで設計。モデル・業務ルール等は要確定 |
 | マスク・持出審査・版採番・結果送信 | point-l3 | 未実装 |
 | EventBridge・SQS・受信Lambda・DynamoDB | point | 定義・受信コードあり |
 | 管理画面、修正・確定API、メール・マイページ連携 | point | 未実装 |
@@ -194,4 +205,8 @@ OpenAPIのPUT/GETは管理側が提供するIAM認可の受信・受信票API。
 bash tools/diagram.sh
 ```
 
-TerraformとDockerが必要。図生成専用の一時コピー・仮の認証情報でplanを作り、固定digestのTerravision公式DockerイメージでPNG/SVGを生成する。AWS API・実stateは参照せず、AWSへの適用も行わない。
+Dockerのみ必要。共通の `docs/architecture.tvg.json` と `docs/terravision.yml` を入力し、日本語フォントを追加したTerravision 0.55.0でPNG/SVGを生成する。Textract/Bedrockはサービス利用を示す図用の型で、Terraformリソースの作成を意味しない。
+
+両リポジトリの設計定義・注釈・生成スクリプト・画像を同一に保つ。共通図は一方で一度生成し、PNG/SVGを他方の `docs/` にもコピーする。描画日時が画像に入るため、個別生成ではバイト単位で一致しない。
+
+このリポジトリのTerraformだけを図示する場合は `bash tools/diagram-terraform.sh` を使う（Terraformも必要）。出力名は `terraform-architecture-aws.dot.png` / `.svg` で、READMEの共通図を上書きしない。どちらの手順もAWSの作成・変更は行わない。
