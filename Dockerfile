@@ -1,6 +1,6 @@
 FROM swaggerapi/swagger-ui:v5.25.3
 
-COPY l3-management.openapi.yaml /spec/openapi.yaml
+COPY openapi.yaml /spec/openapi.yaml
 ENV SWAGGER_JSON=/spec/openapi.yaml
 
 EXPOSE 8080

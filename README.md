@@ -37,7 +37,7 @@ terraform -chdir=terraform validate
 ```text
 point-l3/
 ├── README.md
-├── l3-management.openapi.yaml
+├── openapi.yaml
 ├── Dockerfile
 ├── docker-compose.yml
 ├── terraform/
