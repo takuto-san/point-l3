@@ -11,12 +11,11 @@
 | ツール | 用途 |
 |---|---|
 | Git | ソースの取得 |
-| Docker / Docker Compose v2 | Swagger UIの起動。Docker Desktop等を起動しておく |
-| Python 3.9以上 | 編集可能なdraw.io構成図の再生成 |
-| Terraform 1.6以上 | L3用AWS構成の初期化・検証・構築 |
-| AWS CLI v2 | AWSへ構築する場合の認証・アカウント確認 |
+| Docker / Docker Compose v2 | Swagger UIとdraw.io構成図の再生成。Docker Desktop等を起動しておく |
+| Terraform 1.6以上 | L3用AWS構成の初期化・検証・構築を行う場合のみ |
+| AWS CLI v2 | AWSへ接続・構築する場合のみ |
 
-Swagger UIの閲覧にAWSアカウント・認証情報は不要。このリポジトリには実行アプリやNode.jsテストがないため、Node.jsの導入・`npm install` も不要。
+Swagger UIの閲覧・draw.io構成図の再生成に、ホスト側のPythonやAWSアカウント・認証情報は不要。初回はDockerイメージの取得にネット接続が必要。このリポジトリには実行アプリやNode.jsテストがないため、Node.jsの導入・`npm install` も不要。
 
 ### 1. リポジトリを取得する
 
@@ -36,7 +35,7 @@ docker compose ps
 
 [http://localhost:8081](http://localhost:8081) を開く。これは管理側のAPI契約を閲覧するUIで、L3のWebhook/API本体のローカル起動ではない。停止する場合は `docker compose down` を実行する。ポートが重複する場合は `SWAGGER_PORT=18081 docker compose up --build -d --wait` で変更できる。
 
-### 3. Terraformを設定・検証する
+### 3. AWS構成を設定・検証する場合
 
 初回のみ設定例をコピーし、`terraform/terraform.tfvars` を編集する。既存の設定ファイルがある場合はコピーを省略する。
 
@@ -211,7 +210,7 @@ OpenAPIのPUT/GETは管理側が提供するIAM認可の受信・受信票API。
 bash tools/diagram.sh
 ```
 
-Python 3.9以上のみ必要。共通の `docs/architecture.tvg.json` を入力し、AWS4アイコンを使った編集可能な `docs/architecture-aws.drawio` を生成する。Textract/Bedrockはサービス利用を示す図用の型で、Terraformリソースの作成を意味しない。
+Dockerのみ必要。コンテナ内のPythonで共通の `docs/architecture.tvg.json` を読み込み、AWS4アイコンを使った編集可能な `docs/architecture-aws.drawio` を生成する。ホストにPythonをインストールする必要はない。Textract/Bedrockはサービス利用を示す図用の型で、Terraformリソースの作成を意味しない。
 
 両リポジトリの設計定義・生成スクリプト・draw.ioファイルを同一に保つ。`.drawio` は [diagrams.net](https://app.diagrams.net/) の「ファイルを開く」から編集できる。
 
