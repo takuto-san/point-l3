@@ -40,7 +40,7 @@ docker compose ps
 最初に仕様テンプレートからTerraformファイルを生成する。その後、設定例をコピーして `terraform/terraform.tfvars` を編集する。
 
 ```bash
-bash tools/terraform-generate.sh
+bash scripts/terraform-generate.sh
 cp terraform/terraform.tfvars.example terraform/terraform.tfvars
 terraform -chdir=terraform init
 terraform -chdir=terraform fmt -check
@@ -143,16 +143,9 @@ point-l3/
 │   └── l3-management.openapi.yaml      # 管理側受信APIの契約コピー
 ├── terraform/
 │   └── README.md                       # 構成図・生成後のディレクトリ構成
-├── tools/
-│   ├── diagram.sh                     # 共通AWS設計図の再生成（両リポジトリ共通）
-│   ├── diagram-drawio.py              # 編集可能なdraw.io図を生成
-│   ├── diagram-preview.sh             # TerravisionのPNG/SVGプレビューを生成
-│   ├── diagram-terraform.sh           # このリポジトリのTerraformだけを図示
-│   ├── diagram-providers.tf.txt        # Terraform図用の仮プロバイダ設定
+├── scripts/
 │   ├── terraform-generate.sh           # テンプレートからTerraform一式を生成
-│   ├── terraform/templates/            # Terraformの生成元
-│   ├── terravision.Dockerfile          # 日本語フォント対応の描画環境
-│   └── terravision-services.pth        # Textract/Bedrockの公式サービスアイコン名
+│   └── terraform/templates/            # Terraformの生成元
 └── docs/
     ├── architecture.tvg.json           # 両アカウントの共通設計図
     ├── architecture-aws.drawio          # AWS4アイコンで編集可能な共通図
@@ -202,17 +195,3 @@ OpenAPIのPUT/GETは管理側が提供するIAM認可の受信・受信票API。
 ## 移設済み環境について
 
 元の `point/terraform/l3.tf` のIAMロール・ポリシーを移設し、リソース名を維持した。送信先は管理側リソースの直接参照から入力変数へ変更している。既存環境で旧構成を適用済みの場合は、L3リソースのstateをこのリポジトリへ移管してから両方のplanを確認する。
-
-## AWS構成図の再生成
-
-```bash
-bash tools/diagram.sh
-```
-
-Dockerのみ必要。コンテナ内のPythonで共通の `docs/architecture.tvg.json` を読み込み、AWS4アイコンを使った編集可能な `docs/architecture-aws.drawio` を生成する。READMEの構成図は、このdraw.ioファイルから出力したPNGである。ホストにPythonをインストールする必要はない。Textract/Bedrockはサービス利用を示す図用の型で、Terraformリソースの作成を意味しない。
-
-両リポジトリの設計定義・生成スクリプト・draw.ioファイルを同一に保つ。`.drawio` は [diagrams.net](https://app.diagrams.net/) の「ファイルを開く」から編集できる。
-
-READMEに表示するPNG/SVGプレビューを再生成する場合は、Dockerを起動して `bash tools/diagram-preview.sh` を実行する。Terravision 0.55.0を使うため、プレビューの配置はdraw.io編集画面と異なる。両リポジトリの画像を同一に保つときは一方で生成してコピーする。描画日時が画像に入るため、個別生成ではバイト単位で一致しない。
-
-このリポジトリのTerraformだけを図示する場合は `bash tools/diagram-terraform.sh` を使う（Terraformも必要）。出力名は `terraform-architecture-aws.dot.png` / `.svg` で、READMEの共通図を上書きしない。いずれの図生成手順もAWSの作成・変更は行わない。

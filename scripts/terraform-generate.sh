@@ -2,7 +2,7 @@
 set -euo pipefail
 
 project_dir="$(cd "$(dirname "$0")/.." && pwd)"
-template_dir="$project_dir/tools/terraform/templates"
+template_dir="$project_dir/scripts/terraform/templates"
 output_dir="${1:-$project_dir/terraform}"
 
 mkdir -p "$output_dir"
