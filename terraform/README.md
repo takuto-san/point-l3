@@ -11,7 +11,7 @@ VPC・AZ・サブネットとLambdaのVPC接続は目標構成であり、現時
 ```text
 terraform/
 ├── README.md
-├── aws-architecture.yaml
+├── aws-architecture.yml
 ├── main.tf
 ├── variables.tf
 ├── outputs.tf

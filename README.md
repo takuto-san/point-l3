@@ -27,7 +27,7 @@ cp terraform/terraform.tfvars.example terraform/terraform.tfvars
 terraform -chdir=terraform init
 terraform -chdir=terraform fmt -check
 terraform -chdir=terraform validate
-awsdac terraform/aws-architecture.yaml --output docs/aws-architecture.png --force
+awsdac terraform/aws-architecture.yml --output docs/aws-architecture.png --force
 ```
 
 ## 3. ディレクトリ構成
@@ -35,13 +35,13 @@ awsdac terraform/aws-architecture.yaml --output docs/aws-architecture.png --forc
 ```text
 point-l3/
 ├── README.md
-├── openapi.yaml
+├── openapi.yml
 ├── Dockerfile
 ├── docker-compose.yml
 ├── terraform/
 │   ├── README.md
 │   ├── *.tf
-│   ├── aws-architecture.yaml
+│   ├── aws-architecture.yml
 │   └── terraform.tfvars.example
 └── docs/
     ├── aws-architecture.png
