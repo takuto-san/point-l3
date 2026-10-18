@@ -1,4 +1,3 @@
 *
 !Dockerfile
-!openapi/
-!openapi/l3-management.openapi.yaml
+!l3-management.openapi.yaml

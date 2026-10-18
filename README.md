@@ -139,8 +139,7 @@ point-l3/
 ├── docker-compose.yml                 # localhost:8081
 ├── .dockerignore
 ├── .gitignore                         # state・ローカル設定等を除外
-├── openapi/
-│   └── l3-management.openapi.yaml      # 管理側受信APIの契約コピー
+├── l3-management.openapi.yaml          # 管理側受信APIの契約コピー
 ├── terraform/
 │   └── README.md                       # 構成図・生成後のディレクトリ構成
 ├── scripts/
@@ -181,11 +180,11 @@ point側の `l3_account_id` と本リポジトリの `l3_account_id`、送信先
 
 ## API契約の同期
 
-起動手順は上部の「環境セットアップ」を参照。契約の正本は [pointのOpenAPI](https://github.com/takuto-san/point/blob/main/openapi/l3-management.openapi.yaml) で、[このリポジトリのコピー](openapi/l3-management.openapi.yaml) はv0.2.0。契約更新時は両リポジトリを同じ内容に保つ。
+起動手順は上部の「環境セットアップ」を参照。契約の正本は [pointのOpenAPI](https://github.com/takuto-san/point/blob/main/l3-management.openapi.yaml) で、[このリポジトリのコピー](l3-management.openapi.yaml) はv0.2.0。契約更新時は両リポジトリを同じ内容に保つ。
 
 ```bash
 # 隣接チェックアウトでの契約更新例
-cp ../point/openapi/l3-management.openapi.yaml openapi/l3-management.openapi.yaml
+cp ../point/l3-management.openapi.yaml l3-management.openapi.yaml
 ```
 
 通常の結果送信はEventBridgeを使用する。イベントの `source` は `jp.co.nifty.point-award.l3`、`detail-type` は `AnalysisSnapshot.v1`、`detail` はOpenAPIの `AnalysisSnapshot` とする。`applicationId` と単調増加する `revision` で再送・順序逆転に対応し、各版には差分ではなく全状態を含める。
