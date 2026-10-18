@@ -6,3 +6,6 @@
 terraform.tfvars
 *.auto.tfvars
 crash.log
+terraform/*.tf
+terraform/.terraform.lock.hcl
+terraform/terraform.tfvars.example

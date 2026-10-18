@@ -7,14 +7,11 @@ trap 'rm -r "$diagram_dir"' EXIT
 
 # Mount only a temporary copy of Terraform sources and a synthetic plan.
 mkdir -p "$diagram_dir/terraform" "$project_dir/docs"
-cp "$project_dir"/terraform/*.tf "$diagram_dir/terraform/"
+bash "$project_dir/tools/terraform-generate.sh" "$diagram_dir/terraform"
 cp "$project_dir/tools/diagram-providers.tf.txt" "$diagram_dir/terraform/providers_override.tf"
-cp "$project_dir/terraform/terraform.tfvars.example" "$diagram_dir/terraform/diagram.tfvars"
-if [[ -f "$project_dir/terraform/.terraform.lock.hcl" ]]; then
-  cp "$project_dir/terraform/.terraform.lock.hcl" "$diagram_dir/terraform/"
-fi
+cp "$diagram_dir/terraform/terraform.tfvars.example" "$diagram_dir/terraform/diagram.tfvars"
 
-export TF_DATA_DIR="$project_dir/terraform/.terraform"
+export TF_DATA_DIR="$diagram_dir/.terraform"
 terraform -chdir="$diagram_dir/terraform" init -backend=false -input=false
 terraform -chdir="$diagram_dir/terraform" plan -refresh=false -input=false -var-file=diagram.tfvars -out="$diagram_dir/plan"
 terraform -chdir="$diagram_dir/terraform" show -json "$diagram_dir/plan" > "$diagram_dir/architecture.plan.json"

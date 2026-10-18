@@ -37,9 +37,10 @@ docker compose ps
 
 ### 3. AWS構成を設定・検証する場合
 
-初回のみ設定例をコピーし、`terraform/terraform.tfvars` を編集する。既存の設定ファイルがある場合はコピーを省略する。
+最初に仕様テンプレートからTerraformファイルを生成する。その後、設定例をコピーして `terraform/terraform.tfvars` を編集する。
 
 ```bash
+bash tools/terraform-generate.sh
 cp terraform/terraform.tfvars.example terraform/terraform.tfvars
 terraform -chdir=terraform init
 terraform -chdir=terraform fmt -check
@@ -141,19 +142,15 @@ point-l3/
 ├── openapi/
 │   └── l3-management.openapi.yaml      # 管理側受信APIの契約コピー
 ├── terraform/
-│   ├── versions.tf                    # Terraform・AWSプロバイダのバージョン
-│   ├── providers.tf                   # L3アカウントへの接続
-│   ├── variables.tf                   # アカウントID・送信先ARN等
-│   ├── l3.tf                          # 送信用IAMロール・ポリシー
-│   ├── outputs.tf                     # l3_account_id・l3_export_role_arn
-│   ├── terraform.tfvars.example        # 設定例
-│   └── .terraform.lock.hcl             # AWSプロバイダの固定
+│   └── README.md                       # 構成図・生成後のディレクトリ構成
 ├── tools/
 │   ├── diagram.sh                     # 共通AWS設計図の再生成（両リポジトリ共通）
 │   ├── diagram-drawio.py              # 編集可能なdraw.io図を生成
 │   ├── diagram-preview.sh             # TerravisionのPNG/SVGプレビューを生成
 │   ├── diagram-terraform.sh           # このリポジトリのTerraformだけを図示
 │   ├── diagram-providers.tf.txt        # Terraform図用の仮プロバイダ設定
+│   ├── terraform-generate.sh           # テンプレートからTerraform一式を生成
+│   ├── terraform/templates/            # Terraformの生成元
 │   ├── terravision.Dockerfile          # 日本語フォント対応の描画環境
 │   └── terravision-services.pth        # Textract/Bedrockの公式サービスアイコン名
 └── docs/
@@ -169,7 +166,7 @@ point-l3/
     └── point-award-system-overview-with-screens.html
 ```
 
-生成物・ローカル設定の `.terraform/`、state、`terraform.tfvars` はGit管理対象外。管理側の受信API本体・Lambda・DBはpointに置き、AWS構成図の生成ツールは各リポジトリに置く。
+`terraform/`のREADME以外は生成物であり、`.tf`、`.terraform/`、state、設定ファイルはGit管理対象外。管理側の受信API本体・Lambda・DBはpointに置き、AWS構成図の生成ツールは各リポジトリに置く。
 
 ## 実装状況とリポジトリの分担
 
