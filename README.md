@@ -14,6 +14,7 @@
 | Terraform | 1.6.0以上 |
 | AWS CLI | v2 |
 | Swagger UI | 5.25.3 |
+| Diagram-as-Code (`awsdac`) | v0.23 |
 
 ## 2. セットアップ
 
@@ -26,6 +27,7 @@ cp terraform/terraform.tfvars.example terraform/terraform.tfvars
 terraform -chdir=terraform init
 terraform -chdir=terraform fmt -check
 terraform -chdir=terraform validate
+awsdac terraform/aws-architecture.yaml --output docs/aws-architecture.png --force
 ```
 
 ## 3. ディレクトリ構成
@@ -39,9 +41,9 @@ point-l3/
 ├── terraform/
 │   ├── README.md
 │   ├── *.tf
+│   ├── aws-architecture.yaml
 │   └── terraform.tfvars.example
 └── docs/
-    ├── aws-architecture.yaml
     ├── aws-architecture.png
     └── system-overview.png
 ```

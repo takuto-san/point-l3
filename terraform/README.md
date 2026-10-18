@@ -9,6 +9,7 @@
 ```text
 terraform/
 ├── README.md
+├── aws-architecture.yaml
 ├── main.tf
 ├── variables.tf
 ├── outputs.tf
