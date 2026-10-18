@@ -41,9 +41,9 @@ Diagram:
       Title: ap-northeast-1
       Direction: vertical
       Children:
-        - L3ManagedServices
-        - L3VPC
-    L3ManagedServices:
+        - L3EntryServices
+        - L3ProcessingArea
+    L3EntryServices:
       Type: AWS::Diagram::Resource
       Preset: BlankGroup
       Direction: horizontal
@@ -51,8 +51,22 @@ Diagram:
       BorderType: dashed
       Children:
         - WebhookApi
+        - ReviewStateMachine
+        - L3LambdaImages
+    L3ProcessingArea:
+      Type: AWS::Diagram::HorizontalStack
+      Align: top
+      Children:
+        - L3VPC
+        - L3WorkflowDependencies
+    L3WorkflowDependencies:
+      Type: AWS::Diagram::Resource
+      Preset: BlankGroup
+      Direction: vertical
+      BorderColor: "rgba(0,0,0,255)"
+      BorderType: dashed
+      Children:
         - EvidenceBucket
-        - ReviewWorkflow
         - Textract
         - Bedrock
     L3VPC:
@@ -72,35 +86,65 @@ Diagram:
       Title: プライベートサブネット
       Direction: vertical
       Children:
-        - L3LambdaGrid
-    L3LambdaGrid:
+        - L3WorkflowLayout
+    L3WorkflowLayout:
       Type: AWS::Diagram::VerticalStack
       Children:
-        - L3LambdaRow1
-        - L3LambdaRow2
-    L3LambdaRow1:
-      Type: AWS::Diagram::HorizontalStack
-      Children:
-        - IngestLambda
-        - IdentityLambda
-    L3LambdaRow2:
-      Type: AWS::Diagram::HorizontalStack
-      Children:
-        - AwardLambda
-        - ExportLambda
+        - IngestTaskState
+        - IdentityTaskState
+        - AwardTaskState
+        - ExportTaskState
 
     WebhookApi:
       Type: AWS::ApiGatewayV2::Api
       Title: Webhook受付
+    ReviewStateMachine:
+      Type: AWS::StepFunctions
+      Title: Step Functions Standard
     IngestLambda:
       Type: AWS::Lambda::Function
       Title: 申請・証跡取込
+    IngestTaskState:
+      Type: AWS::Diagram::Resource
+      HeaderAlign: left
+      FillColor: "rgba(255,255,255,255)"
+      BorderColor: "rgba(87,96,106,255)"
+      Children:
+        - IngestLambda
     EvidenceBucket:
       Type: AWS::S3::Bucket
       Title: 顧客情報・証跡
+    IdentityTaskState:
+      Type: AWS::Diagram::Resource
+      HeaderAlign: left
+      FillColor: "rgba(255,255,255,255)"
+      BorderColor: "rgba(87,96,106,255)"
+      Children:
+        - IdentityLambda
+    AwardTaskState:
+      Type: AWS::Diagram::Resource
+      HeaderAlign: left
+      FillColor: "rgba(255,255,255,255)"
+      BorderColor: "rgba(87,96,106,255)"
+      Children:
+        - AwardLambda
+    ExportTaskState:
+      Type: AWS::Diagram::Resource
+      HeaderAlign: left
+      FillColor: "rgba(255,255,255,255)"
+      BorderColor: "rgba(87,96,106,255)"
+      Children:
+        - ExportLambda
     ReviewWorkflow:
       Type: AWS::StepFunctions
-      Title: 精査ワークフロー
+      Title: Step Functions workflow
+      SpanResources:
+        - IngestTaskState
+        - IdentityTaskState
+        - AwardTaskState
+        - ExportTaskState
+      BorderColor: "rgba(232,22,122,255)"
+      BorderType: solid
     Textract:
       Type: AWS::Diagram::Resource
       Preset: Amazon Textract
@@ -109,6 +153,9 @@ Diagram:
       Type: AWS::Diagram::Resource
       Preset: Amazon Bedrock
       Title: 判定支援
+    L3LambdaImages:
+      Type: AWS::ECR
+      Title: Lambdaイメージ
     IdentityLambda:
       Type: AWS::Lambda::Function
       Title: 本人確認
@@ -216,40 +263,61 @@ Diagram:
       TargetArrowHead: { Type: Open }
       Type: orthogonal
     - Source: WebhookApi
-      SourcePosition: S
-      Target: L3VPC
-      TargetPosition: N
-      TargetArrowHead: { Type: Open }
-      Type: orthogonal
-    - Source: EvidenceBucket
-      SourcePosition: S
-      Target: ReviewWorkflow
-      TargetPosition: N
-      TargetArrowHead: { Type: Open }
-      Type: orthogonal
-    - Source: ReviewWorkflow
       SourcePosition: E
+      Target: ReviewStateMachine
+      TargetPosition: W
+      TargetArrowHead: { Type: Open }
+      Type: orthogonal
+    - Source: ReviewStateMachine
+      SourcePosition: S
+      Target: IngestTaskState
+      TargetPosition: N
+      TargetArrowHead: { Type: Open }
+      Type: orthogonal
+    - Source: IngestLambda
+      SourcePosition: E
+      Target: EvidenceBucket
+      TargetPosition: W
+      TargetArrowHead: { Type: Open }
+      Type: orthogonal
+    - Source: IngestTaskState
+      SourcePosition: S
+      Target: IdentityTaskState
+      TargetPosition: N
+      TargetArrowHead: { Type: Open }
+      Type: orthogonal
+    - Source: IdentityLambda
+      SourcePosition: ENE
       Target: Textract
       TargetPosition: W
       TargetArrowHead: { Type: Open }
-    - Source: Textract
-      SourcePosition: E
+      Type: orthogonal
+    - Source: IdentityLambda
+      SourcePosition: ESE
       Target: Bedrock
       TargetPosition: W
       TargetArrowHead: { Type: Open }
-    - Source: IdentityLambda
+      Type: orthogonal
+    - Source: L3LambdaImages
       SourcePosition: S
-      Target: AwardLambda
+      Target: L3WorkflowLayout
       TargetPosition: N
       TargetArrowHead: { Type: Open }
       Type: orthogonal
-    - Source: AwardLambda
-      SourcePosition: E
-      Target: ExportLambda
-      TargetPosition: W
+      LineStyle: dashed
+    - Source: IdentityTaskState
+      SourcePosition: S
+      Target: AwardTaskState
+      TargetPosition: N
       TargetArrowHead: { Type: Open }
       Type: orthogonal
-    - Source: ExportLambda
+    - Source: AwardTaskState
+      SourcePosition: S
+      Target: ExportTaskState
+      TargetPosition: N
+      TargetArrowHead: { Type: Open }
+      Type: orthogonal
+    - Source: ExportTaskState
       SourcePosition: E
       Target: ResultBus
       TargetPosition: W

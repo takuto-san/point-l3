@@ -44,7 +44,36 @@ Swagger UI は <http://localhost:8081> で確認できる。ポートを変更�
 - 公開先をループバックアドレスに限定し、コンテナ内の権限昇格を抑止する。
 - このイメージはAPIドキュメント表示専用であり、L3処理の実行環境ではない。
 
-## 3. ディレクトリ構成
+## 3. L3処理基盤仕様
+
+L3の処理基盤は、Amazon ECRに格納したコンテナイメージをAWS Lambdaで実行する。ECSおよびFargateは使用しない。
+
+- `申請・証跡取込`、`本人確認`、`付与判定`、`持出制御`を独立したLambdaとして構成する。
+- LambdaはZIPではなくコンテナイメージ形式とし、同一リージョンのECRからデプロイする。
+- ECRリポジトリはLambda単位で分離し、タグの上書きを禁止してイメージスキャンを有効にする。
+- 4つのLambdaはL3処理VPC内の単一AZ・単一プライベートサブネットへ配置する。
+- 状態遷移にはStep Functions Standard Workflowを使用し、各Lambdaの順序、リトライ、タイムアウト、異常終了を定義する。
+- 証跡本体と大きな解析結果はS3に保持し、Step Functionsでは`applicationId`、`revision`、S3のbucket/keyなどの参照情報だけを受け渡す。
+- 各Lambdaは`applicationId`と`revision`を冪等性キーとして、再試行時の二重処理を防止する。
+
+基本状態遷移は次のとおり。
+
+```text
+Webhook受付
+  → Step Functions Standardを開始
+  → 申請・証跡取込（証跡をS3へ保存）
+  → 本人確認（Textractによる証跡抽出、Bedrockによる判定支援）
+  → 付与判定
+  → 持出制御
+  → 管理側EventBridgeへ結果送信
+  → 正常終了
+```
+
+各Taskの一時的な失敗は上限付きで再試行し、回復不能なエラーは`Catch`で失敗状態へ遷移させる。管理側へ送信できるのは、持出制御を正常に通過した結果だけとする。
+
+構成図のStep Functions枠線はオーケストレーション範囲を表し、ネットワーク境界ではない。Lambdaはプライベートサブネットへ接続するが、Step Functions自体はVPC外のAWSマネージドサービスとして動作する。
+
+## 4. ディレクトリ構成
 
 ```text
 point-l3/
@@ -62,8 +91,8 @@ point-l3/
     └── system-overview.png
 ```
 
-## 4. AWS構成図
+## 5. AWS構成図
 
 ![AWS構成図](diagrams/aws-architecture.png)
 
-この図は目標構成です。L3側は単一AZ・単一プライベートサブネットに処理Lambdaを集約します。VPC・AZ・サブネットとLambdaのVPC接続は現時点のTerraformには未実装です。
+この図は目標構成です。L3側はECRのコンテナイメージを使用する4つのLambdaを単一AZ・単一プライベートサブネットに配置し、Step Functions Standardで状態遷移を管理します。ECR、Step Functions、VPC、サブネットとLambdaの接続は現時点のTerraformには未実装です。
