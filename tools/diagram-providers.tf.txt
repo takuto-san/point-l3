@@ -1,0 +1,12 @@
+# Used only in a temporary directory to create a credential-free diagram plan.
+provider "aws" {
+  region                      = var.aws_region
+  profile                     = null
+  allowed_account_ids         = []
+  access_key                  = "diagram-only"
+  secret_key                  = "diagram-only"
+  skip_credentials_validation = true
+  skip_requesting_account_id  = true
+  skip_metadata_api_check     = true
+  skip_region_validation      = true
+}

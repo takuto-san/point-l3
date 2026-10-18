@@ -4,37 +4,92 @@
 
 設計の基準は「管理システム」チャットの最新の全体像・画面仕様。証跡精査の工数を月約30時間削減し、7日以内に審査結果を通知することを業務目標とする。現時点でこのリポジトリにあるAWSリソース定義は、管理側へ結果を送るIAMロール・ポリシーのみ。
 
-## システム連携図
+## 環境セットアップ
 
-以下は完成時の全体像。破線は、この2リポジトリにまだ実装されていない処理・業務連携を示す。L3内の受付・保存・解析・持出審査・送信コードは未実装で、管理側は結果受信・保存まで実装している。
+### 必要なツール
 
-```mermaid
-flowchart TB
-    Customer["お客様"] --> Form["formrun<br/>申請・証跡受付"]
+| ツール | 用途 |
+|---|---|
+| Git | ソースの取得 |
+| Docker / Docker Compose v2 | Swagger UIの起動。Docker Desktop等を起動しておく |
+| Terraform 1.6以上 | L3用AWS構成の初期化・検証・構築 |
+| AWS CLI v2 | AWSへ構築する場合の認証・アカウント確認 |
 
-    subgraph L3["L3アカウント：point-l3"]
-        Raw["証跡・回答データ<br/>個人情報・原本を保持"]
-        Extract["OCR・情報抽出<br/>氏名・解約金総額"]
-        Identity["本人確認<br/>回線契約者氏名と照合"]
-        Award["ポイント付与判定<br/>確認済みの業務ルールを参照"]
-        Gate["レベル間移行<br/>項目制限・マスク・持出審査"]
-        Raw -.-> Extract
-        Extract -.-> Identity
-        Extract -.-> Award
-        Identity -.-> Gate
-        Award -.-> Gate
-    end
+Swagger UIの閲覧にAWSアカウント・認証情報は不要。このリポジトリには実行アプリやNode.jsテストがないため、Node.jsの導入・`npm install` も不要。
 
-    Form -.->|"Webhook（未実装）"| Raw
-    Gate -.->|"許可済み結果を順次送信（未実装）"| Admin["申請管理システム：point<br/>結果受信・一覧・詳細・確定"]
-    Staff["審査担当者"] -.->|"結果・理由を修正して「確定」"| Admin
-    Staff -.->|"原本は「formrunで開く」"| Form
-    Admin -.->|"メールリスト"| Mail["既存メール基盤"]
-    Mail -.->|"審査結果通知"| Customer
-    Mail -.->|"配信完了連携"| Admin
-    Form -.->|"申請受付：受付済み"| MyPage["既存マイページ"]
-    Admin -.->|"取込後：審査中<br/>配信完了後：結果"| MyPage
+### 1. リポジトリを取得する
+
+```bash
+git clone https://github.com/takuto-san/point-l3.git
+cd point-l3
 ```
+
+以下のコマンドは、特記がない限りリポジトリのルートで実行する。
+
+### 2. Swagger UIを起動する
+
+```bash
+docker compose up --build -d --wait
+docker compose ps
+```
+
+[http://localhost:8081](http://localhost:8081) を開く。これは管理側のAPI契約を閲覧するUIで、L3のWebhook/API本体のローカル起動ではない。停止する場合は `docker compose down` を実行する。ポートが重複する場合は `SWAGGER_PORT=18081 docker compose up --build -d --wait` で変更できる。
+
+### 3. Terraformを設定・検証する
+
+初回のみ設定例をコピーし、`terraform/terraform.tfvars` を編集する。既存の設定ファイルがある場合はコピーを省略する。
+
+```bash
+cp terraform/terraform.tfvars.example terraform/terraform.tfvars
+terraform -chdir=terraform init
+terraform -chdir=terraform fmt -check
+terraform -chdir=terraform validate
+```
+
+| 設定項目 | 設定する値 |
+|---|---|
+| `l3_aws_profile` | L3アカウント用AWSプロファイル名。例：`l3-dev` |
+| `l3_account_id` | 適用先L3アカウントの12桁ID。point側の同名変数と一致させる |
+| `management_event_bus_arn` | pointのTerraform出力から取得する管理側イベントバスARN |
+| `aws_region` | 管理側EventBridgeと同じリージョン。初期値：`ap-northeast-1` |
+
+設定例のアカウントID・イベントバスARNは仮の値なので、構築前に実環境の値へ置き換える。`init` はプロバイダ取得のためネット接続が必要だが、`validate` までの手順にAWS認証情報は不要。`terraform.tfvars` とstateはGit管理対象外。
+
+### 4. AWSへ接続・構築する場合
+
+構築順序は **point（管理側）→ point-l3（L3側）**。先に [pointの環境セットアップ](https://github.com/takuto-san/point#環境セットアップ) に従って管理側を構築し、イベントバスARNを取得する。隣接してチェックアウトしている場合は、以下で確認できる。
+
+```bash
+terraform -chdir=../point/terraform output -raw management_event_bus_arn
+```
+
+取得した値を `terraform/terraform.tfvars` の `management_event_bus_arn` へ設定する。隣接チェックアウトがない場合は、管理側の担当者からARNを受け取って設定してもよい。
+
+組織の認証手順に従ってL3アカウント用プロファイルを用意し、`l3_aws_profile` と同じ名前で認証する。例の `l3-dev` は実際の名前に置き換える。
+
+```bash
+aws sts get-caller-identity --profile l3-dev
+terraform -chdir=terraform plan -var-file=terraform.tfvars
+```
+
+表示されたアカウントIDと `l3_account_id` が一致することを確認する。AWSリソースを構築する場合は、planの内容を確認してから実行する。
+
+```bash
+terraform -chdir=terraform apply -var-file=terraform.tfvars
+terraform -chdir=terraform output -raw l3_export_role_arn
+```
+
+出力は将来の送信Lambdaへ割り当てる実行ロールのARN。現在はIAMロール・ポリシーの構築までで、Webhook・OCR・送信Lambda本体は起動しない。
+
+## システム概要
+
+「管理システム」チャットでCodexのdiagram-designを使って作成した、全体構成と画面仕様の図。両リポジトリで同じ図を掲載し、L3側と管理側の役割を共有する。L3の受付・解析・持出審査・送信コードは未実装。
+
+![解約金還元申請システムの全体構成と画面仕様](docs/point-award-system-overview-with-screens.png)
+
+[SVG版](docs/point-award-system-overview-with-screens.svg) ／ [編集用HTML](docs/point-award-system-overview-with-screens.html)
+
+既存図を内容変更せず掲載している。図中のTextractは当初の検討案で、現在のOCR/AIサービスは未選定。図の矢印・破線は元の凡例に従い、実装済み／未実装の区分は下の表を参照。
 
 L3側の処理方針：
 
@@ -56,30 +111,15 @@ L3側の処理方針：
 
 ## AWS構成図
 
-現在のL3用TerraformはIAMロールとインラインポリシーの2リソースだけを定義する。実線はTerraformで定義した権限関係、破線は未実装の送信処理との接続予定。送信先EventBridgeは管理側のリソースで、ここでは作成しない。
+L3側TerraformのplanからTerravisionで生成した構成図。現在の定義は送信用IAMロールとインラインポリシーの2リソースのみ。IAMリソースを表示するため、簡略化オプションは使わずに生成する。
 
-```mermaid
-flowchart LR
-    subgraph AWS["AWS Cloud"]
-        subgraph L3["L3アカウント：point-l3"]
-            Role["AWS IAM Role<br/>point-award-dev-export"]
-            Policy["AWS IAM Inline Policy<br/>publish-approved-results"]
-            Sender["送信Lambda・持出ゲート<br/>未実装"]
-            Role -->|"ポリシーを付与"| Policy
-            Role -.->|"実行ロールの割当予定"| Sender
-        end
-        subgraph Management["管理アカウント：point"]
-            Bus["Amazon EventBridge<br/>point-award-dev-l3-results"]
-        end
-    end
+![Terravisionで生成したL3アカウントのAWS構成図](docs/architecture-aws.dot.png)
 
-    Policy -->|"events:PutEventsの許可対象"| Bus
-    Sender -.->|"持出許可済み結果を送信"| Bus
-```
+[SVG版](docs/architecture-aws.dot.svg)
 
-図のリソース名はデフォルト設定の例。ロールの信頼先は `lambda.amazonaws.com`、送信権限は入力変数 `management_event_bus_arn` のイベントバスだけに限定する。L3アカウント内の送信許可と、管理アカウント側のイベントバスポリシーの両方で接続する。
+図は仮のアカウントIDによる設計図。送信先EventBridgeはpoint側の定義なので、L3側の作成対象には含まれない。ロールの信頼先は `lambda.amazonaws.com`、許可する送信先は `management_event_bus_arn` のイベントバスのみ。
 
-API Gateway、証跡用S3・DB、OCR/AI、送信LambdaはまだTerraformに含まれていない。IAMロールを作成しただけでは、formrunから結果送信までの処理は動作しない。VPC・サブネット・NATも現在の構成には含めていない。
+API Gateway、証跡用S3・DB、OCR/AI、送信Lambda、VPC・サブネット・NATは現在のTerraformに含まれていない。業務処理の全体像は上のシステム概要を参照。
 
 ## ディレクトリ構成
 
@@ -92,17 +132,26 @@ point-l3/
 ├── .gitignore                         # state・ローカル設定等を除外
 ├── openapi/
 │   └── l3-management.openapi.yaml      # 管理側受信APIの契約コピー
-└── terraform/
-    ├── versions.tf                    # Terraform・AWSプロバイダのバージョン
-    ├── providers.tf                   # L3アカウントへの接続
-    ├── variables.tf                   # アカウントID・送信先ARN等
-    ├── l3.tf                          # 送信用IAMロール・ポリシー
-    ├── outputs.tf                     # l3_account_id・l3_export_role_arn
-    ├── terraform.tfvars.example        # 設定例
-    └── .terraform.lock.hcl             # AWSプロバイダの固定
+├── terraform/
+│   ├── versions.tf                    # Terraform・AWSプロバイダのバージョン
+│   ├── providers.tf                   # L3アカウントへの接続
+│   ├── variables.tf                   # アカウントID・送信先ARN等
+│   ├── l3.tf                          # 送信用IAMロール・ポリシー
+│   ├── outputs.tf                     # l3_account_id・l3_export_role_arn
+│   ├── terraform.tfvars.example        # 設定例
+│   └── .terraform.lock.hcl             # AWSプロバイダの固定
+├── tools/
+│   ├── diagram.sh                     # Terravision構成図の再生成
+│   └── diagram-providers.tf.txt        # 図生成専用の仮プロバイダ設定
+└── docs/
+    ├── architecture-aws.dot.png
+    ├── architecture-aws.dot.svg
+    ├── point-award-system-overview-with-screens.png
+    ├── point-award-system-overview-with-screens.svg
+    └── point-award-system-overview-with-screens.html
 ```
 
-生成物・ローカル設定の `.terraform/`、state、`terraform.tfvars` はGit管理対象外。管理側の受信API本体・Lambda・DB・構成図生成ツールはpointに置く。
+生成物・ローカル設定の `.terraform/`、state、`terraform.tfvars` はGit管理対象外。管理側の受信API本体・Lambda・DBはpointに置き、AWS構成図の生成ツールは各リポジトリに置く。
 
 ## 実装状況とリポジトリの分担
 
@@ -116,38 +165,15 @@ point-l3/
 | EventBridge・SQS・受信Lambda・DynamoDB | point | 定義・受信コードあり |
 | 管理画面、修正・確定API、メール・マイページ連携 | point | 未実装 |
 
-## Terraformの設定・検証
+## 管理側との接続
 
-pointの管理側Terraformを先に適用し、出力 `management_event_bus_arn` を取得する。
+point側の `l3_account_id` と本リポジトリの `l3_account_id`、送信先のリージョンを揃える。AWSプロバイダは `allowed_account_ids` でL3への適用を検証する。stateは両リポジトリで独立し、互いのstateや隣接チェックアウトへの実行時依存はない。
 
-```bash
-# point-l3から、隣接しているpointの出力を取得する例
-terraform -chdir=../point/terraform output -raw management_event_bus_arn
+出力 `l3_export_role_arn` を送信Lambdaの実行ロールに設定する際は、ログ・L3データ等の必要な権限を送信Lambdaの実装側で追加する。
 
-cp terraform/terraform.tfvars.example terraform/terraform.tfvars
-```
+## API契約の同期
 
-`terraform/terraform.tfvars` の `l3_aws_profile`、`l3_account_id`、`management_event_bus_arn` を実環境の値に変更する。
-
-```bash
-terraform -chdir=terraform init
-terraform -chdir=terraform fmt -check
-terraform -chdir=terraform validate
-terraform -chdir=terraform plan -var-file=terraform.tfvars
-```
-
-point側の `l3_account_id` と本リポジトリの `l3_account_id` を一致させる。リージョンも送信先EventBridgeと揃える。AWSプロバイダは `allowed_account_ids` でL3への適用を検証する。stateは両リポジトリで独立し、互いのstateや隣接チェックアウトへの実行時依存はない。
-
-出力 `l3_export_role_arn` を送信Lambdaの実行ロールに設定する際は、ログ・L3データ等の必要な権限を送信Lambdaの実装側で追加する。このロール単独ではLambdaをデプロイしない。
-
-## API契約の閲覧・同期
-
-```bash
-docker compose up --build -d
-# http://localhost:8081
-```
-
-Swagger UIは送信先のAPI仕様閲覧用。L3が提供するWebhook/APIの実装ではない。正本は [pointのOpenAPI](https://github.com/takuto-san/point/blob/main/openapi/l3-management.openapi.yaml) で、[このリポジトリのコピー](openapi/l3-management.openapi.yaml) はv0.2.0。契約更新時は両リポジトリを同じ内容に保つ。
+起動手順は上部の「環境セットアップ」を参照。契約の正本は [pointのOpenAPI](https://github.com/takuto-san/point/blob/main/openapi/l3-management.openapi.yaml) で、[このリポジトリのコピー](openapi/l3-management.openapi.yaml) はv0.2.0。契約更新時は両リポジトリを同じ内容に保つ。
 
 ```bash
 # 隣接チェックアウトでの契約更新例
@@ -161,3 +187,11 @@ OpenAPIのPUT/GETは管理側が提供するIAM認可の受信・受信票API。
 ## 移設済み環境について
 
 元の `point/terraform/l3.tf` のIAMロール・ポリシーを移設し、リソース名を維持した。送信先は管理側リソースの直接参照から入力変数へ変更している。既存環境で旧構成を適用済みの場合は、L3リソースのstateをこのリポジトリへ移管してから両方のplanを確認する。
+
+## AWS構成図の再生成
+
+```bash
+bash tools/diagram.sh
+```
+
+TerraformとDockerが必要。図生成専用の一時コピー・仮の認証情報でplanを作り、固定digestのTerravision公式DockerイメージでPNG/SVGを生成する。AWS API・実stateは参照せず、AWSへの適用も行わない。
