@@ -35,10 +35,10 @@
         <mxCell id="group-mgmt-ui" value="管理画面" vertex="1" parent="aws_account.management" style="swimlane;container=0;collapsible=0;startSize=34;horizontal=1;rounded=0;html=0;fillColor=#FAFAFA;swimlaneFillColor=#FAFAFA;strokeColor=#AAB7B8;strokeWidth=1;dashed=1;dashPattern=6 4;fontFamily=Arial;fontSize=14;fontStyle=1;fontColor=#545B64;align=left;spacingLeft=12;verticalAlign=top;spacingTop=7;">
           <mxGeometry x="35" y="500" width="520" height="175" as="geometry" />
         </mxCell>
-        <mxCell id="flow-01" value="Webhook" edge="1" parent="1" source="tv_aws_internet.formrun" target="aws_apigatewayv2_api.l3_webhook" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;">
+        <mxCell id="flow-01" value="Webhook" edge="1" parent="1" source="external.formrun" target="aws_apigatewayv2_api.l3_webhook" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="flow-02" value="" edge="1" parent="1" source="tv_aws_users.reviewers" target="aws_cloudfront_distribution.admin" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;">
+        <mxCell id="flow-02" value="" edge="1" parent="1" source="actor.reviewers" target="aws_cloudfront_distribution.admin" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="flow-03" value="" edge="1" parent="1" source="aws_apigatewayv2_api.l3_webhook" target="aws_lambda_function.l3_ingest" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;">
@@ -55,10 +55,10 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="flow-06" value="" edge="1" parent="1" source="aws_sfn_state_machine.l3_review" target="tv_aws_textract.ocr" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;">
+        <mxCell id="flow-06" value="" edge="1" parent="1" source="aws_sfn_state_machine.l3_review" target="aws_textract.ocr" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="flow-07" value="原本を参照" edge="1" parent="1" source="aws_s3_bucket.l3_customer_evidence" target="tv_aws_textract.ocr" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=5 4;strokeWidth=1;exitX=0.5;exitY=1;entryX=0.5;entryY=1;">
+        <mxCell id="flow-07" value="原本を参照" edge="1" parent="1" source="aws_s3_bucket.l3_customer_evidence" target="aws_textract.ocr" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=5 4;strokeWidth=1;exitX=0.5;exitY=1;entryX=0.5;entryY=1;">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="740" y="500" />
@@ -66,10 +66,10 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="flow-08" value="" edge="1" parent="1" source="tv_aws_textract.ocr" target="aws_lambda_function.l3_identity" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;">
+        <mxCell id="flow-08" value="" edge="1" parent="1" source="aws_textract.ocr" target="aws_lambda_function.l3_identity" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="flow-09" value="" edge="1" parent="1" source="tv_aws_textract.ocr" target="aws_lambda_function.l3_award" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=1;">
+        <mxCell id="flow-09" value="" edge="1" parent="1" source="aws_textract.ocr" target="aws_lambda_function.l3_award" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=1;">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="1091" y="500" />
@@ -85,7 +85,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="flow-11" value="" edge="1" parent="1" source="aws_lambda_function.l3_award" target="tv_aws_bedrock.judgement" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;">
+        <mxCell id="flow-11" value="" edge="1" parent="1" source="aws_lambda_function.l3_award" target="aws_bedrock.judgement" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="flow-12" value="" edge="1" parent="1" source="aws_lambda_function.l3_award" target="aws_lambda_function.l3_export_gate" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=1;">
@@ -117,10 +117,10 @@
         <mxCell id="flow-19" value="" edge="1" parent="1" source="aws_cloudfront_distribution.admin" target="aws_s3_bucket.admin_web" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeColor=#545B64;strokeWidth=2;fontFamily=Arial;fontSize=12;fontColor=#545B64;labelBackgroundColor=#FFFFFF;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="tv_aws_internet.formrun" value="formrun&#10;申請・証跡" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontStyle=1;fontColor=#232F3E;fillColor=#FFFFFF;strokeColor=#879196;strokeWidth=1;">
+        <mxCell id="external.formrun" value="formrun&#10;申請・証跡" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontStyle=1;fontColor=#232F3E;fillColor=#FFFFFF;strokeColor=#879196;strokeWidth=1;">
           <mxGeometry x="10" y="330" width="140" height="76" as="geometry" />
         </mxCell>
-        <mxCell id="tv_aws_users.reviewers" value="審査担当者" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontStyle=1;fontColor=#232F3E;fillColor=#FFFFFF;strokeColor=#879196;strokeWidth=1;">
+        <mxCell id="actor.reviewers" value="審査担当者" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=0;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=16;fontStyle=1;fontColor=#232F3E;fillColor=#FFFFFF;strokeColor=#879196;strokeWidth=1;">
           <mxGeometry x="1840" y="920" width="140" height="76" as="geometry" />
         </mxCell>
         <mxCell id="aws_apigatewayv2_api.l3_webhook" value="Amazon API Gateway&#10;Webhook受付" vertex="1" parent="aws_account.l3_existing" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#8C4FFF;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.api_gateway;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
@@ -135,7 +135,7 @@
         <mxCell id="aws_sfn_state_machine.l3_review" value="AWS Step Functions&#10;精査ワークフロー" vertex="1" parent="aws_account.l3_existing" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#E7157B;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.step_functions;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
           <mxGeometry x="680" y="180" width="72" height="72" as="geometry" />
         </mxCell>
-        <mxCell id="tv_aws_textract.ocr" value="Amazon Textract&#10;証跡抽出" vertex="1" parent="aws_account.l3_existing" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#DD344C;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.textract;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
+        <mxCell id="aws_textract.ocr" value="Amazon Textract&#10;証跡抽出" vertex="1" parent="aws_account.l3_existing" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#DD344C;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.textract;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
           <mxGeometry x="870" y="180" width="72" height="72" as="geometry" />
         </mxCell>
         <mxCell id="aws_lambda_function.l3_identity" value="AWS Lambda&#10;本人確認" vertex="1" parent="aws_account.l3_existing" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#FF9900;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
@@ -144,7 +144,7 @@
         <mxCell id="aws_lambda_function.l3_award" value="AWS Lambda&#10;付与判定" vertex="1" parent="aws_account.l3_existing" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#FF9900;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
           <mxGeometry x="870" y="430" width="72" height="72" as="geometry" />
         </mxCell>
-        <mxCell id="tv_aws_bedrock.judgement" value="Amazon Bedrock&#10;判定支援" vertex="1" parent="aws_account.l3_existing" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#01A88D;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
+        <mxCell id="aws_bedrock.judgement" value="Amazon Bedrock&#10;判定支援" vertex="1" parent="aws_account.l3_existing" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#01A88D;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.bedrock;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
           <mxGeometry x="1060" y="430" width="72" height="72" as="geometry" />
         </mxCell>
         <mxCell id="aws_lambda_function.l3_export_gate" value="AWS Lambda&#10;持出制御" vertex="1" parent="aws_account.l3_existing" style="sketch=0;outlineConnect=0;gradientColor=none;fillColor=#FF9900;strokeColor=#FFFFFF;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;aspect=fixed;html=0;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontFamily=Arial;fontSize=14;fontColor=#232F3E;labelBackgroundColor=#FFFFFF;labelWidth=145;spacingTop=5;">
@@ -186,7 +186,7 @@
         <mxCell id="step-aws_sfn_state_machine.l3_review" value="3" vertex="1" parent="aws_account.l3_existing" style="ellipse;html=0;aspect=fixed;fillColor=#147EBA;strokeColor=#FFFFFF;strokeWidth=2;fontFamily=Arial;fontSize=13;fontStyle=1;fontColor=#FFFFFF;align=center;verticalAlign=middle;">
           <mxGeometry x="664" y="165" width="28" height="28" as="geometry" />
         </mxCell>
-        <mxCell id="step-tv_aws_textract.ocr" value="4" vertex="1" parent="aws_account.l3_existing" style="ellipse;html=0;aspect=fixed;fillColor=#147EBA;strokeColor=#FFFFFF;strokeWidth=2;fontFamily=Arial;fontSize=13;fontStyle=1;fontColor=#FFFFFF;align=center;verticalAlign=middle;">
+        <mxCell id="step-aws_textract.ocr" value="4" vertex="1" parent="aws_account.l3_existing" style="ellipse;html=0;aspect=fixed;fillColor=#147EBA;strokeColor=#FFFFFF;strokeWidth=2;fontFamily=Arial;fontSize=13;fontStyle=1;fontColor=#FFFFFF;align=center;verticalAlign=middle;">
           <mxGeometry x="854" y="165" width="28" height="28" as="geometry" />
         </mxCell>
         <mxCell id="step-aws_lambda_function.l3_identity" value="5" vertex="1" parent="aws_account.l3_existing" style="ellipse;html=0;aspect=fixed;fillColor=#147EBA;strokeColor=#FFFFFF;strokeWidth=2;fontFamily=Arial;fontSize=13;fontStyle=1;fontColor=#FFFFFF;align=center;verticalAlign=middle;">

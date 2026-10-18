@@ -52,8 +52,6 @@ point-l3/
     ├── architecture-aws.drawio
     ├── architecture-aws.png
     ├── architecture-aws.svg
-    ├── architecture.tvg.json
-    ├── terravision.yml
     └── point-award-system-overview-with-screens.{html,png,svg}
 ```
 
