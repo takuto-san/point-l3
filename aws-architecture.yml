@@ -286,7 +286,7 @@ Diagram:
       TargetPosition: N
       TargetArrowHead: { Type: Open }
       Type: orthogonal
-    - Source: IdentityLambda
+    - Source: IngestLambda
       SourcePosition: ENE
       Target: Textract
       TargetPosition: W

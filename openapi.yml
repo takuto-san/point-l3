@@ -37,8 +37,8 @@ paths:
       tags:
       - L3結果連携
       operationId: putAnalysisRevision
-      summary: 受付・本人確認・ポイント付与判定の最新スナップショットを連携
-      description: L3側の持出ゲートから管理側へ送信。差分ではなく、その版時点の全状態を送る。初回は両解析PENDINGでもよい。200は永続化と反映/保留/旧版判定が完了したことを示し、審査確定・メール送信を意味しない。同じパスへの同一本文の再送は保存済みの受信票を返す。
+      summary: OCR抽出後の初回状態と後続判定の最新スナップショットを連携
+      description: L3側の持出ゲートから管理側へEventBridgeで非同期送信する契約。差分ではなく、その版時点の全状態を送る。初回はOCRで抽出した解約金を含め、本人確認と追加判定をPENDINGとして送信する。以後、本人確認結果と付与可否などの追加判定が更新されるたびにrevisionを増やして再送する。本人確認のNGだけでは申請全体の否決を確定しない。200は、この契約を照会・検証用HTTPS APIで受信した場合に、永続化と反映/保留/旧版判定が完了したことを示し、審査確定・メール送信を意味しない。同じパスへの同一本文の再送は保存済みの受信票を返す。
       x-caller: L3側の持出ゲート
       requestBody:
         required: true
@@ -48,7 +48,7 @@ paths:
               $ref: '#/components/schemas/AnalysisSnapshot'
             examples:
               received:
-                summary: 初回受付
+                summary: OCR抽出後の初回連携
                 value: &id001
                   schemaVersion: '1.0'
                   applicationId: APP-0241
@@ -56,14 +56,14 @@ paths:
                   submissionVersion: 1
                   receivedAt: '2026-10-17T09:00:00+09:00'
                   submittedAt: '2026-10-17T09:00:00+09:00'
-                  generatedAt: '2026-10-17T09:00:10+09:00'
+                  generatedAt: '2026-10-17T09:00:30+09:00'
                   campaignCode: DRAFT_CANCELLATION_REFUND
                   channelCode: DRAFT_NOJIMA
                   identityAnalysis:
                     status: PENDING
                   awardAnalysis:
                     status: PENDING
-                  cancellationFeeTotalYen: null
+                  cancellationFeeTotalYen: 18700
               analyzed:
                 summary: 両判定完了
                 value: &id002
@@ -190,7 +190,7 @@ components:
         reason:
           $ref: '#/components/schemas/ResultReason'
     IdentityAnalysis:
-      description: 処理状態は連携用メタデータ。AIの出力はdecision内のresultとreasonのみ。NGは処理失敗ではない。
+      description: 処理状態は連携用メタデータ。AIの出力はdecision内のresultとreasonのみ。NGは処理失敗でも申請全体の自動否決でもなく、追加判定と担当者確認の入力として扱う。
       oneOf:
       - type: object
         additionalProperties: false
@@ -378,7 +378,7 @@ components:
           - integer
           - 'null'
           minimum: 0
-          description: 抽出した解約金総額（円）。未抽出・読取不可はnull。0円と区別。対象費用額や付与ポイント数ではない。
+          description: OCRで抽出した解約金総額（円）。通常の初回連携では値を設定する。読取不可で手動確認へ回す場合だけnullとし、0円と区別する。対象費用額や付与ポイント数ではない。
         displayData:
           $ref: '#/components/schemas/DisplayData'
       examples:
